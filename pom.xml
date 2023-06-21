@@ -85,6 +85,14 @@
 			<artifactId>lombok</artifactId>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/commons-validator/commons-validator -->
+		<dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+			<version>1.7</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -112,14 +120,19 @@
 			<version>4.4.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+<!--		<plugins>-->
+<!--			<plugin>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--			</plugin>-->
 
 <!--			<plugin>-->
 <!--				<groupId>org.flywaydb</groupId>-->
@@ -131,7 +144,7 @@
 <!--					<password>postgres</password>-->
 <!--				</configuration>-->
 <!--			</plugin>-->
-		</plugins>
+<!--		</plugins>-->
 	</build>
 	<repositories>
 		<repository>

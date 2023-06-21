@@ -1,6 +1,7 @@
 package com.endava.parkinglot.controllers;
 
-import com.endava.parkinglot.DTO.AuthenticationDTO;
+import com.endava.parkinglot.DTO.auth.AuthAndRegistrationResponseDTO;
+import com.endava.parkinglot.DTO.auth.AuthenticationDTO;
 import com.endava.parkinglot.security.JWTUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,14 +33,26 @@ public class AuthenticationController {
     }
 
     @PostMapping
-    public ResponseEntity<String> authenticate(@RequestBody @Valid AuthenticationDTO authenticationDTO){
+    public ResponseEntity<AuthAndRegistrationResponseDTO> authenticate(@RequestBody @Valid AuthenticationDTO authenticationDTO){
+        String role = "";
         UsernamePasswordAuthenticationToken inputToken = new UsernamePasswordAuthenticationToken(
                 authenticationDTO.getEmail(), authenticationDTO.getPassword());
 
-        authenticationManager.authenticate(inputToken);
+        Authentication authentication = authenticationManager.authenticate(inputToken);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        for(GrantedAuthority authority : userDetails.getAuthorities()){
+            role = authority.getAuthority().substring(5);
+        }
 
         String jwt = jwtUtil.generateAccessToken(authenticationDTO.getEmail());
 
-        return new ResponseEntity<>(jwt, HttpStatus.OK);
+        AuthAndRegistrationResponseDTO response = new AuthAndRegistrationResponseDTO(
+                userDetails.getUsername(),
+                role,
+                jwt
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

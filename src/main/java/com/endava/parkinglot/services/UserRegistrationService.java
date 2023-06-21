@@ -8,5 +8,5 @@ public interface UserRegistrationService {
 
     UserRegistrationDtoResponse register(UserRegistrationDtoRequest registrationDtoRequest);
 
-    void grantAdminPermissions(Long id);
+    void grantAdminPermissions(Long id, String email);
 }

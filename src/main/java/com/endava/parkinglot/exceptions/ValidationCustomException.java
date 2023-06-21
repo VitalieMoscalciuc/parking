@@ -1,18 +1,17 @@
 package com.endava.parkinglot.exceptions;
 
-import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ValidationErrorObject;
-
-import java.util.List;
+import java.util.Map;
 
 public class ValidationCustomException extends RuntimeException {
 
-    private final List<ValidationErrorObject> errorObjectList;
+    private final Map<String, String> errorObjectMap;
 
-    public ValidationCustomException(List<ValidationErrorObject> errorObjectList) {
-        this.errorObjectList = errorObjectList;
+    public ValidationCustomException(Map<String, String> errorObjectMap) {
+        this.errorObjectMap = errorObjectMap;
     }
 
-    public List<ValidationErrorObject> getErrorObjectList() {
-        return errorObjectList;
+    public Map<String, String> getErrorObjectMap() {
+        return errorObjectMap;
     }
+
 }

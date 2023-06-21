@@ -66,14 +66,14 @@ class UserMapperTest {
                 .name("Jonathan")
                 .password("Jonathan_2")
                 .phone("068112233")
-                .role(Role.USER)
+                .role(Role.REGULAR)
                 .build();
 
         UserRegistrationDtoResponse expectedResponseDto = UserRegistrationDtoResponse.builder()
                 .id(1L)
                 .name("Jonathan")
                 .email("john23@gmail.com")
-                .role(Role.USER)
+                .role(Role.REGULAR)
                 .build();
 
         when(modelMapper.map(userEntity, UserRegistrationDtoResponse.class)).thenReturn(expectedResponseDto);

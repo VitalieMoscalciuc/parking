@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.*;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -23,10 +24,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
+    private final List<String> adminEndpoints;
+
     @Autowired
     public JWTAuthenticationFilter(JWTUtil jwtUtil, UserDetailsService userDetailsService) {
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        adminEndpoints = new ArrayList<>(List.of("/grantAdmin"));
     }
 
     @Override
