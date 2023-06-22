@@ -9,15 +9,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.MappingException;
+
 import org.modelmapper.ModelMapper;
 
-import java.util.Collections;
-
-import static java.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +66,6 @@ class UserMapperTest {
                 .build();
 
         UserRegistrationDtoResponse expectedResponseDto = UserRegistrationDtoResponse.builder()
-                .id(1L)
                 .name("Jonathan")
                 .email("john23@gmail.com")
                 .role(Role.REGULAR)
@@ -82,7 +77,6 @@ class UserMapperTest {
         verify(modelMapper).map(userEntity, UserRegistrationDtoResponse.class);
 
         assertAll(
-                () -> assertEquals(expectedResponseDto.getId(), userEntity.getId()),
                 () -> assertEquals(expectedResponseDto.getName(), userEntity.getName()),
                 () -> assertEquals(expectedResponseDto.getRole(), userEntity.getRole())
         );

@@ -57,7 +57,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         user.setEnabled(true);
         user.setRole(Role.REGULAR);
 
-        return userMapper.mapEntityToResponseDto(userRepository.save(user));
+        UserEntity savedUser = userRepository.save(user);
+        return userMapper.mapEntityToResponseDto(savedUser);
     }
 
     private String getRole() {

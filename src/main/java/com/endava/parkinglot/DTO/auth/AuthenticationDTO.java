@@ -3,7 +3,9 @@ package com.endava.parkinglot.DTO.auth;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
+@Builder
 public class AuthenticationDTO {
 
     @NotEmpty(message = "Email cannot be empty !")
