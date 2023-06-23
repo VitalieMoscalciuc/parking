@@ -30,7 +30,13 @@ public class UserValidator implements Validator {
         UserRegistrationDtoRequest dtoRequest = (UserRegistrationDtoRequest) target;
 
         Optional<UserEntity> emailCheck = userRepository.findByEmail(dtoRequest.getEmail());
-        if (emailCheck.isPresent())
+        Optional<UserEntity> phoneCheck = userRepository.findByPhone(dtoRequest.getPhone());
+        if (emailCheck.isPresent()) {
             errors.rejectValue("email", "", "This email is already registered in the system !");
+        }
+        if (phoneCheck.isPresent()){
+            errors.rejectValue("phone", "", "User with this phone number" +
+                    " is already registered in the system !");
+        }
     }
 }
