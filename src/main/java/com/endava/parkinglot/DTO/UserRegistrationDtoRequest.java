@@ -13,7 +13,7 @@ import lombok.*;
 public class UserRegistrationDtoRequest {
 
     @NotBlank(message = "Only alphabetical characters are allowed, maximum length is 30 characters")
-    @Pattern(regexp = "[\\p{L}\\s]+", message = "Only alphabetical characters are allowed, maximum length is 30 characters")
+    @Pattern(regexp = "^[\\p{L}\\sА-Яа-яĂăÂâÎîȘșȚț]+$", message = "Only alphabetical characters are allowed, maximum length is 30 characters")
     @Size(max = 30, message = "Only alphabetical characters are allowed, maximum length is 30 characters")
     private String name;
 

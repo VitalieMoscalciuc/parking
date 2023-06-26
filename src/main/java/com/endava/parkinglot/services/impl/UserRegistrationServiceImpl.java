@@ -52,7 +52,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         UserEntity user;
         user = userMapper.mapRequestDtoToEntity(registrationDtoRequest);
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword().trim()));
+        user.setName(user.getName().trim().replaceAll("\\s+", " "));
         user.setEnabled(true);
         user.setRole(Role.REGULAR);
 
@@ -73,7 +74,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     }
 
     @Transactional
-    private UserEntity grantAdminPermissionsById(Long userId) {
+    public UserEntity grantAdminPermissionsById(Long userId) {
         if (getRole().equals(Role.ADMIN.toString())) {
             UserEntity user = userRepository.findById(userId).orElseThrow(
                     () -> new UserNotFoundException("User with ID " + userId + " not found.")
@@ -86,7 +87,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     }
 
     @Transactional
-    private UserEntity grantAdminPermissionsByEmail(String email) {
+    public UserEntity grantAdminPermissionsByEmail(String email) {
         if (getRole().equals(Role.ADMIN.toString())) {
             UserEntity user = userRepository.findByEmail(email).orElseThrow(
                     () -> new UserNotFoundException("User with email " + email + " not found.")
