@@ -2,19 +2,15 @@ package com.endava.parkinglot.mapper;
 
 import com.endava.parkinglot.DTO.UserRegistrationDtoRequest;
 import com.endava.parkinglot.DTO.UserRegistrationDtoResponse;
-import com.endava.parkinglot.model.Role;
+import com.endava.parkinglot.enums.Role;
 import com.endava.parkinglot.model.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.MappingException;
 import org.modelmapper.ModelMapper;
 
-import java.util.Collections;
-
-import static java.util.Collections.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;

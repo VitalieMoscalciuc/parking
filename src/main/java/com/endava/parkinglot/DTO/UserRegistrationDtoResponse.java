@@ -1,6 +1,6 @@
 package com.endava.parkinglot.DTO;
 
-import com.endava.parkinglot.model.Role;
+import com.endava.parkinglot.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

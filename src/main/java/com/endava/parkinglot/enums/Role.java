@@ -1,4 +1,4 @@
-package com.endava.parkinglot.model;
+package com.endava.parkinglot.enums;
 
 public enum Role {
     REGULAR,

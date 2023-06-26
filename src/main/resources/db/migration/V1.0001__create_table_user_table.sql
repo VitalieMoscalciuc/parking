@@ -10,6 +10,3 @@ CREATE TABLE IF NOT EXISTS "user_table" (
     CONSTRAINT password_length CHECK (LENGTH(password) >= 5 AND LENGTH(password) <= 100),
     CONSTRAINT phone_number_length CHECK (LENGTH(phone_number) = 9)
 );
-
-
-);
