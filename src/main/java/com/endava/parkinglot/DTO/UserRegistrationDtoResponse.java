@@ -13,7 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRegistrationDtoResponse {
-    private Long id;
     private String name;
     private String email;
     private Role role;

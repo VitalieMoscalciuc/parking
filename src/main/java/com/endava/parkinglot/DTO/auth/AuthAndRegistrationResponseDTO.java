@@ -1,5 +1,8 @@
 package com.endava.parkinglot.DTO.auth;
 
+import lombok.Builder;
+
+@Builder
 public class AuthAndRegistrationResponseDTO {
 
     private final String email;

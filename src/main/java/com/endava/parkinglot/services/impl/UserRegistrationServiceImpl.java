@@ -57,7 +57,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         user.setEnabled(true);
         user.setRole(Role.REGULAR);
 
-        return userMapper.mapEntityToResponseDto(userRepository.save(user));
+        UserEntity savedUser = userRepository.save(user);
+        return userMapper.mapEntityToResponseDto(savedUser);
     }
 
     private String getRole() {
@@ -126,6 +127,5 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         } catch (FailedEmailNotificationException failedEmailNotificationException) {
             logger.warn("Email was not sent, admin permissions granted for user: " + entity.getEmail());
         }
-
     }
 }
