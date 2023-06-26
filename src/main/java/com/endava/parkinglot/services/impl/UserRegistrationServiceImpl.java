@@ -4,7 +4,6 @@ import com.endava.parkinglot.DTO.UserRegistrationDtoRequest;
 import com.endava.parkinglot.DTO.UserRegistrationDtoResponse;
 import com.endava.parkinglot.exceptions.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.UserNotFoundException;
-import com.endava.parkinglot.exceptions.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.exceptions.ValidationCustomException;
 import com.endava.parkinglot.mapper.UserMapper;
 import com.endava.parkinglot.model.Role;
@@ -17,9 +16,6 @@ import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,43 +56,22 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         return userMapper.mapEntityToResponseDto(userRepository.save(user));
     }
 
-    private String getRole() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
-
-        String role = "";
-        for (GrantedAuthority authority : userDetails.getAuthorities()) {
-            role = authority.toString();
-        }
-        role = role.substring(5);
-
-        return role;
-    }
-
     @Transactional
     public UserEntity grantAdminPermissionsById(Long userId) {
-        if (getRole().equals(Role.ADMIN.toString())) {
-            UserEntity user = userRepository.findById(userId).orElseThrow(
-                    () -> new UserNotFoundException("User with ID " + userId + " not found.")
-            );
-            user.setRole(Role.ADMIN);
-            return userRepository.save(user);
-        } else {
-            throw new UserNotGrantedToDoActionException("User doesn't have authorities to do this action");
-        }
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("User with ID " + userId + " not found.")
+        );
+        user.setRole(Role.ADMIN);
+        return userRepository.save(user);
     }
 
     @Transactional
     public UserEntity grantAdminPermissionsByEmail(String email) {
-        if (getRole().equals(Role.ADMIN.toString())) {
-            UserEntity user = userRepository.findByEmail(email).orElseThrow(
-                    () -> new UserNotFoundException("User with email " + email + " not found.")
-            );
-            user.setRole(Role.ADMIN);
-            return userRepository.save(user);
-        } else {
-            throw new UserNotGrantedToDoActionException("User doesn't have authorities to do this action");
-        }
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(
+                () -> new UserNotFoundException("User with email " + email + " not found.")
+        );
+        user.setRole(Role.ADMIN);
+        return userRepository.save(user);
     }
 
     private void validateEmail(String email) {
@@ -121,6 +96,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         } else {
             throw new UserNotFoundException("Missing user ID or email.");
         }
+
+
         try {
             emailNotificationService.sendNotificationAboutGrantedAdminRole(entity.getEmail());
         } catch (FailedEmailNotificationException failedEmailNotificationException) {
