@@ -6,7 +6,7 @@ import com.endava.parkinglot.exceptions.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.UserNotFoundException;
 import com.endava.parkinglot.exceptions.ValidationCustomException;
 import com.endava.parkinglot.mapper.UserMapper;
-import com.endava.parkinglot.model.Role;
+import com.endava.parkinglot.enums.Role;
 import com.endava.parkinglot.model.UserEntity;
 import com.endava.parkinglot.model.repository.UserRepository;
 import com.endava.parkinglot.services.EmailNotificationService;
