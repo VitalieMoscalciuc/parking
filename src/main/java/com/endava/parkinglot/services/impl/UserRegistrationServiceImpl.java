@@ -127,6 +127,5 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         } catch (FailedEmailNotificationException failedEmailNotificationException) {
             logger.warn("Email was not sent, admin permissions granted for user: " + entity.getEmail());
         }
-
     }
 }
