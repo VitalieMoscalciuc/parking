@@ -1,6 +1,6 @@
 package com.endava.parkinglot.security.filters;
 
-import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ErrorDetails;
+import com.endava.parkinglot.exceptions.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.FilterErrorDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +22,16 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);
-        } catch (RuntimeException e) {
+        }
+        catch (UserNotGrantedToDoActionException e) {
+            FilterErrorDetails errorResponse = new FilterErrorDetails(LocalDate.now().toString(), e.getMessage());
+            String jsonErrorResponse = convertObjectToJson(errorResponse);
+
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.getWriter().write(jsonErrorResponse);
+        }
+        catch (RuntimeException e) {
             FilterErrorDetails errorResponse = new FilterErrorDetails(LocalDate.now().toString(), e.getMessage());
             String jsonErrorResponse = convertObjectToJson(errorResponse);
 

@@ -2,6 +2,7 @@ package com.endava.parkinglot.util;
 
 import com.endava.parkinglot.security.filters.ExceptionHandlerFilter;
 import com.endava.parkinglot.security.filters.JWTAuthenticationFilter;
+import com.endava.parkinglot.security.filters.OnlyAdminEndpointCheckFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,15 +23,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
 
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
+    private final OnlyAdminEndpointCheckFilter onlyAdminEndpointCheckFilter;
+
+
     @Autowired
-    public SecurityConfig(UserDetailsService userDetailsService, JWTAuthenticationFilter jwtAuthenticationFilter, ExceptionHandlerFilter exceptionHandlerFilter) {
+    public SecurityConfig(UserDetailsService userDetailsService, JWTAuthenticationFilter jwtAuthenticationFilter, ExceptionHandlerFilter exceptionHandlerFilter, OnlyAdminEndpointCheckFilter onlyAdminEndpointCheckFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.exceptionHandlerFilter = exceptionHandlerFilter;
+        this.onlyAdminEndpointCheckFilter = onlyAdminEndpointCheckFilter;
     }
 
     @Bean
@@ -49,7 +55,8 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                     .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(exceptionHandlerFilter, JWTAuthenticationFilter.class);
+                    .addFilterBefore(exceptionHandlerFilter, JWTAuthenticationFilter.class)
+                    .addFilterAfter(onlyAdminEndpointCheckFilter, JWTAuthenticationFilter.class);
 
 
         return http.build();
