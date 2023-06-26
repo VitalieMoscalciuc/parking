@@ -34,7 +34,7 @@ public class UserEntity {
     @Column(name = "phone_number", nullable = false)
     private String phone;
 
-    @Column(name = "enabled", columnDefinition = "boolean default true")
+    @Column(name = "enabled")
     @ColumnDefault("true")
     private boolean enabled;
 

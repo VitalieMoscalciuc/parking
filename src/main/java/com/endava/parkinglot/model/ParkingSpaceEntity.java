@@ -33,7 +33,6 @@ public class ParkingSpaceEntity {
     @Column(nullable = false)
     private int number;
 
-    @ColumnDefault("regular")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SpaceType type;
