@@ -23,7 +23,7 @@ public class UserRegistrationDtoRequest {
 
     @NotBlank(message = "Invalid password.Must be 5-10 characters, including symbols, upper- and lower-case letters." +
             "Should contain at least one digit,one upper case and one symbol")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#^()_+\\-'\";.,])[A-Za-z\\d@$!%*?&#^()_+\\-'\";.,]{5,10}$",
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#^()_+\\-'\";.,/\\\\|\\[\\]:<>{}])[A-Za-z\\d@$!%*?&#^()_+\\-'\";.,/\\\\|\\[\\]:<>{}]{5,10}$",
             message = "Invalid password.Must be 5-10 characters, including symbols, upper- and lower-case letters." +
                       "Should contain at least one digit,one upper case and one symbol")
     private String password;
