@@ -29,6 +29,6 @@ public class UserRegistrationDtoRequest {
     private String password;
 
     @NotBlank(message = "Phone number must contain exactly 9 numeric characters(without +373).Starting with 0")
-    @Pattern(regexp = "^0[67][0-9]{7}$", message="Phone number must contain exactly 9 numeric characters(without +373).Starting with 0")
+    @Pattern(regexp = "^0[0-9]{8}$", message="Phone number must contain exactly 9 numeric characters(without +373).Starting with 0")
     private String phone;
 }
