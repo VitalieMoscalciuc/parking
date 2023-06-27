@@ -1,7 +1,7 @@
 package com.endava.parkinglot.security.filters;
 
+import com.endava.parkinglot.enums.Role;
 import com.endava.parkinglot.exceptions.UserNotGrantedToDoActionException;
-import com.endava.parkinglot.model.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

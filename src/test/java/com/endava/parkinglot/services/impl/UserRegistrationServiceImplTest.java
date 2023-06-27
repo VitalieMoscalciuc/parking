@@ -2,9 +2,9 @@ package com.endava.parkinglot.services.impl;
 
 import com.endava.parkinglot.DTO.UserRegistrationDtoRequest;
 import com.endava.parkinglot.DTO.UserRegistrationDtoResponse;
+import com.endava.parkinglot.enums.Role;
 import com.endava.parkinglot.exceptions.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.mapper.UserMapper;
-import com.endava.parkinglot.model.Role;
 import com.endava.parkinglot.model.UserEntity;
 import com.endava.parkinglot.model.repository.UserRepository;
 import org.junit.jupiter.api.Test;
