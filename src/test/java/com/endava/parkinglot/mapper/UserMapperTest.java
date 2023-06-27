@@ -2,7 +2,7 @@ package com.endava.parkinglot.mapper;
 
 import com.endava.parkinglot.DTO.UserRegistrationDtoRequest;
 import com.endava.parkinglot.DTO.UserRegistrationDtoResponse;
-import com.endava.parkinglot.model.Role;
+import com.endava.parkinglot.enums.Role;
 import com.endava.parkinglot.model.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

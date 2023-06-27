@@ -1,5 +1,6 @@
 package com.endava.parkinglot.model;
 
+import com.endava.parkinglot.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-
-import java.util.Set;
 
 @Builder
 @Getter
@@ -35,7 +34,7 @@ public class UserEntity {
     @Column(name = "phone_number", nullable = false)
     private String phone;
 
-    @Column(name = "enabled", columnDefinition = "boolean default true")
+    @Column(name = "enabled")
     @ColumnDefault("true")
     private boolean enabled;
 
