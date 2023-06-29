@@ -1,19 +1,11 @@
 package com.endava.parkinglot.model;
 
 import com.endava.parkinglot.enums.LotState;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.sql.Time;
+import java.util.List;
 
 @Builder
 @Getter
@@ -34,17 +26,19 @@ public class ParkingLotEntity {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
-    private String working_hours;
+    @Column(nullable = false, name = "begin_working_hour")
+    private Time beginWorkingHour;
+
+    @Column(nullable = false, name = "end_working_hour")
+    private Time endWorkingHour;
 
     @Column(nullable = false)
-    private String working_days;
+    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.PERSIST)
+    private List<WorkingDaysEntity> working_days;
 
     @Column(nullable = false)
-    private int number_of_levels;
-
-    @Column(nullable = false)
-    private int spaces_per_level;
+    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL)
+    private List<ParkingLevelEntity> levels;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
