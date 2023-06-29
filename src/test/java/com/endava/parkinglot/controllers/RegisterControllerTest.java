@@ -8,7 +8,6 @@ import com.endava.parkinglot.exceptions.ValidationCustomException;
 import com.endava.parkinglot.security.JWTUtil;
 import com.endava.parkinglot.services.UserRegistrationService;
 import com.endava.parkinglot.util.UserValidator;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
