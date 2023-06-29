@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.sql.Time;
 import java.util.List;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -43,4 +44,7 @@ public class ParkingLotEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LotState state;
+
+    @ManyToMany(mappedBy = "parkingLots")
+    Set<UserEntity> users;
 }

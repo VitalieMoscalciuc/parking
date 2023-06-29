@@ -39,7 +39,7 @@ public class ParkingLotController {
     }
 
     @PutMapping("/{id}/addUser")
-    public ResponseEntity<HttpStatus> addUserToParkingLot(@PathVariable int id, @RequestParam(value = "userId") Long userId) {
+    public ResponseEntity<HttpStatus> addUserToParkingLot(@PathVariable Long id, @RequestParam(value = "userId") Long userId) {
         parkingLotCreationService.addUser(id, userId);
 
         return new ResponseEntity<>(HttpStatus.OK);
