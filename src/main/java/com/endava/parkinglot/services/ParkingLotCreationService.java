@@ -8,4 +8,5 @@ import java.util.List;
 public interface ParkingLotCreationService {
     ParkingLotCreationDtoResponse createParkingLot(ParkingLotCreationDtoRequest parkingLotCreationDtoRequest);
     List<ParkingLotCreationDtoResponse> getAllParkingLot();
+    void addUser(int id, Long userId);
 }

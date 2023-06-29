@@ -36,4 +36,11 @@ public class ParkingLotController {
                 = parkingLotCreationService.createParkingLot(parkingLotCreationDtoRequest);
         return new ResponseEntity<>(newParkingLot, HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}/addUser")
+    public ResponseEntity<HttpStatus> addUserToParkingLot(@PathVariable int id, @RequestParam(value = "userId") Long userId) {
+        parkingLotCreationService.addUser(id, userId);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
