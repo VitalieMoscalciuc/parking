@@ -30,16 +30,19 @@ public class ParkingSpaceEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @ColumnDefault("REGULAR")
     private SpaceType type;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @ColumnDefault("AVAILABLE")
     private SpaceState state;
 
     @ManyToOne
     @JoinColumn(name = "parking_level_id")
     private ParkingLevelEntity parkingLevelId;
 
-    @Column(nullable = false)
-    private int user_id;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }
