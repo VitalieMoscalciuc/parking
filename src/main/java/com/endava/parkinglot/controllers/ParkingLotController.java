@@ -23,10 +23,11 @@ public class ParkingLotController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<ParkingLotCreationDtoResponse>> createParkingLot() {
-        List<ParkingLotCreationDtoResponse> newParkingLot
-                = parkingLotCreationService.getAllParkingLot();
-        return new ResponseEntity<>(newParkingLot, HttpStatus.OK);
+    public ResponseEntity<List<ParkingLotCreationDtoResponse>> getAll(
+            @RequestParam(required = false) String name) {
+        List<ParkingLotCreationDtoResponse> parkingLots
+                = parkingLotCreationService.getAllParkingLot(name);
+        return new ResponseEntity<>(parkingLots, HttpStatus.OK);
     }
 
     @PostMapping("/create")

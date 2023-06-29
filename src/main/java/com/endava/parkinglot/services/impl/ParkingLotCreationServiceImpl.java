@@ -21,12 +21,16 @@ public class ParkingLotCreationServiceImpl implements ParkingLotCreationService 
     }
 
     @Override
+    public List<ParkingLotCreationDtoResponse> getAllParkingLot(String name) {
+        return parkingMapper
+                    .mapListEntityToListResponseDto(
+                            parkingLotRepository.search(name)
+                    );
+    }
+
+    @Override
     public ParkingLotCreationDtoResponse createParkingLot(ParkingLotCreationDtoRequest parkingLotCreationDtoRequest) {
         return null;
     }
 
-    @Override
-    public List<ParkingLotCreationDtoResponse> getAllParkingLot() {
-        return null;
-    }
 }
