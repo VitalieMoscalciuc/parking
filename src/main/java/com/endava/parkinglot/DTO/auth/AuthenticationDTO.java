@@ -6,8 +6,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
+@Setter
+@Getter
 @GroupSequence({AuthenticationDTO.NotEmptyValidationGroup.class, AuthenticationDTO.PatternValidationGroup.class, AuthenticationDTO.SizeValidationGroup.class, AuthenticationDTO.EmailValidationGroup.class, AuthenticationDTO.class})
 public class AuthenticationDTO {
 
@@ -17,24 +21,12 @@ public class AuthenticationDTO {
     @Email(message = "Please enter a valid email address.", groups = EmailValidationGroup.class)
     private String email;
 
-    @NotBlank(message = "Password cannot be empty.", groups = NotEmptyValidationGroup.class)
+    @NotBlank(message = "Invalid password.Must be 5-10 characters, including symbols, upper- and lower-case letters." +
+            "Should contain at least one digit,one upper case and one symbol", groups = NotEmptyValidationGroup.class)
+    @Pattern(regexp = "(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W)(.{5,10})",
+            message = "Invalid password. Must be 5-10 characters, including symbols, upper- and lower-case letters. " +
+                    "Should contain at least one digit, one uppercase letter, and one symbol")
     private String password;
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     public interface NotEmptyValidationGroup {
     }
