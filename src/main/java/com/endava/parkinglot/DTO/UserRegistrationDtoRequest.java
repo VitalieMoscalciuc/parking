@@ -17,7 +17,7 @@ public class UserRegistrationDtoRequest {
     @Size(max = 30, message = "Only alphabetical characters are allowed, maximum length is 30 characters")
     private String name;
 
-    @NotBlank(message = "Invalid email. It should be like: 'example@email.com'")
+    @NotBlank(message = "Invalid email. It must follow the standard email pattern: example@gmail.com.")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message="Invalid email. It should be like: 'example@email.com'")
     private String email;
 
