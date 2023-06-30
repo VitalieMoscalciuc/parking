@@ -1,10 +1,22 @@
 package com.endava.parkinglot.model;
 
-import com.endava.parkinglot.enums.LotState;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 
-import java.sql.Time;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 
@@ -28,23 +40,21 @@ public class ParkingLotEntity {
     private String address;
 
     @Column(nullable = false, name = "begin_working_hour")
-    private Time beginWorkingHour;
+    private LocalTime beginWorkingHour;
 
     @Column(nullable = false, name = "end_working_hour")
-    private Time endWorkingHour;
+    private LocalTime endWorkingHour;
 
-    @Column(nullable = false)
+    @Column(name = "working_days", nullable = false)
     @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.PERSIST)
-    private List<WorkingDaysEntity> working_days;
+    private List<WorkingDaysEntity> workingDays;
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL)
     private List<ParkingLevelEntity> levels;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LotState state;
-
     @ManyToMany(mappedBy = "parkingLots")
     Set<UserEntity> users;
+    @Column(name = "status_close", nullable = false)
+    private Boolean isClosed;
 }

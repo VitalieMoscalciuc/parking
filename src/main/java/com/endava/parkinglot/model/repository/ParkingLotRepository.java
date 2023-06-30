@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Long> {
 
@@ -24,4 +25,6 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
             ,nativeQuery = true)
     boolean checkIfUserExistsOnParkingLot(@Param("userId") Long userId, @Param("parkingLotId") Long parkingLotI);
 
+
+    Optional<ParkingLotEntity> findByName(String name);
 }
