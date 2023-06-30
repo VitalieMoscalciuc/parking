@@ -37,7 +37,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
             String message = error.getDefaultMessage();
             errors.put(fieldName, message);
         });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+        ValidationErrorDetails errorDetails = new ValidationErrorDetails(LocalDate.now(), errors,
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({ValidationCustomException.class})
@@ -50,7 +54,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({BadCredentialsException.class})
     public ResponseEntity<ErrorDetails> handleBadCredentialsException(Exception ex, WebRequest request) {
-        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
+        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), "Incorrect email address or password",
                 request.getDescription(false));
 
         return new ResponseEntity<>(errorDetails, HttpStatus.valueOf(401));
@@ -81,5 +85,6 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
 
 }
