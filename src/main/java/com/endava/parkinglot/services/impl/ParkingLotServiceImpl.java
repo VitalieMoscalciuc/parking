@@ -81,10 +81,12 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     @Override
     @Transactional
     public void addUser(Long id, Long userId) {
-        ParkingLotEntity parkingLot = parkingLotRepository.findById(id).orElseThrow(() -> new ParkingLotNotFoundException(id));
+        ParkingLotEntity parkingLot = parkingLotRepository.findById(id).orElseThrow(
+                () -> new ParkingLotNotFoundException(id)
+        );
 
-        UserEntity user = userRepository.findById(id).orElseThrow(
-                () -> new UserNotFoundException("User with ID " + id + " not found.")
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new UserNotFoundException("User with ID " + userId + " not found.")
         );
 
         parkingLot.getUsers().add(user);
