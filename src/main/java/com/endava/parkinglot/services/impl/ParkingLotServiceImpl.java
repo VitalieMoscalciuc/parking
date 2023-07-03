@@ -41,9 +41,9 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         else logger.info("Going to look for lots with name like: " + searchString);
 
         return parkingMapper
-                    .mapListEntityToListResponseDto(
-                            parkingLotRepository.search(searchString)
-                    );
+                .mapListEntityToListResponseDto(
+                        parkingLotRepository.search(searchString)
+                );
     }
 
     @Override
@@ -99,4 +99,14 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             logger.warn("Email was not sent, user not added to parking lot: " + user.getEmail());
         }
     }
+
+    @Override
+    public void deleteParkingLot(Long id) {
+        if (!parkingLotRepository.existsById(id)) {
+            throw new ParkingLotNotFoundException(id);
+        }
+
+        parkingLotRepository.deleteById(id);
+    }
 }
+
