@@ -73,4 +73,20 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
         }
     }
 
+    @Override
+    public void sendNotificationAboutDeletionFromParkingLot(String email,String parkingLotName) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromAddress);
+            message.setTo(email);
+            message.setSubject("You have been removed from parking lot");
+            message.setText("You have been removed from " + parkingLotName);
+
+            mailSender.send(message);
+            logger.info("Email has been sent to: '" + email + "'");
+        } catch (MailException mailException) {
+            throw new FailedEmailNotificationException("Could not send the email to: '" + email + "'");
+        }
+    }
+
 }

@@ -3,6 +3,7 @@ package com.endava.parkinglot.services.impl;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
+import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.mapper.ParkingMapper;
@@ -109,6 +110,36 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         }
 
         parkingLotRepository.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteUserFromParkingLot(Long userId, Long parkingLotId) {
+        ParkingLotEntity parkingLot = parkingLotRepository
+                .findById(parkingLotId).orElseThrow
+                        (() -> new ParkingLotNotFoundException(parkingLotId));
+
+        UserEntity user = userRepository
+                .findById(userId).orElseThrow
+                        (() -> new UserNotFoundException("User with ID " + userId + " not found."));
+
+        if(!parkingLotRepository
+                .checkIfUserExistsOnParkingLot(userId,parkingLotId)){
+            throw new NoSuchUserOnParkingLotException(
+                    "User with ID " + userId + " is not present on parking lot with ID "+parkingLotId);
+        }
+
+        logger.info("Removing User with ID "+ userId + " from parking lot with ID "+ parkingLotId);
+
+        parkingLotRepository
+                .removeUserFromParkingLot(userId, parkingLotId);
+
+        try {
+            emailNotificationService
+                    .sendNotificationAboutDeletionFromParkingLot(user.getEmail(), parkingLot.getName());
+        } catch (FailedEmailNotificationException exception) {
+            logger.warn("Email was not sent, user not added to parking lot: {}", user.getEmail());
+        }
     }
 }
 

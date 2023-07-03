@@ -1,5 +1,6 @@
 package com.endava.parkinglot.exceptions.exceptionHandler;
 
+import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpaceNotFoundException;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ErrorDetails;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ValidationErrorDetails;
@@ -80,6 +81,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ParkingLotNotFoundException.class})
     public ResponseEntity<ErrorDetails> handleParkingLotNotFoundException(ParkingLotNotFoundException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler({NoSuchUserOnParkingLotException.class})
+    public ResponseEntity<ErrorDetails> handleUserNotFoundOnParkingLotException(NoSuchUserOnParkingLotException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
                 request.getDescription(false));
 
