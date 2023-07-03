@@ -2,6 +2,7 @@ package com.endava.parkinglot.services.impl;
 
 import com.endava.parkinglot.DTO.register.UserRegistrationDtoRequest;
 import com.endava.parkinglot.DTO.register.UserRegistrationDtoResponse;
+import com.endava.parkinglot.DTO.restorePassword.UserPasswordRestoreDtoResponse;
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
@@ -11,6 +12,7 @@ import com.endava.parkinglot.model.UserEntity;
 import com.endava.parkinglot.model.repository.UserRepository;
 import com.endava.parkinglot.services.EmailNotificationService;
 import com.endava.parkinglot.services.UserRegistrationService;
+import com.endava.parkinglot.util.PasswordGenerator;
 import jakarta.transaction.Transactional;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
@@ -31,16 +33,34 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final PasswordGenerator passwordGenerator;
+
     private final EmailNotificationService emailNotificationService;
 
     private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
 
     @Autowired
-    public UserRegistrationServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, EmailNotificationService emailNotificationService) {
+    public UserRegistrationServiceImpl(UserRepository userRepository,PasswordGenerator passwordGenerator, UserMapper userMapper, PasswordEncoder passwordEncoder, EmailNotificationService emailNotificationService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.emailNotificationService = emailNotificationService;
+        this.passwordGenerator = passwordGenerator;
+    }
+
+    @Override
+    @Transactional(rollbackOn = FailedEmailNotificationException.class)
+    public UserPasswordRestoreDtoResponse changeUserPasswordAndSendEmail(String email) {
+        userRepository.findByEmail(email).orElseThrow(
+                () -> new UserNotFoundException("User with email " + email + " not found in system."));
+        var response = new UserPasswordRestoreDtoResponse();
+        var newPassword = passwordGenerator.generateRandomPassword();
+        var encryptedPassword = passwordEncoder.encode(newPassword);
+        logger.info("Updating user password...");
+        userRepository.updateUserEntityByPassword(encryptedPassword, email);
+        emailNotificationService.sendNewPassword(email,newPassword);
+        response.setMessage("Your password was updated successfully, new password was sent to your email");
+        return response;
     }
 
     @Override

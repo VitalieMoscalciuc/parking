@@ -56,4 +56,21 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
             throw new FailedEmailNotificationException("Could not send the email to: '" + userEmail + "'");
         }
     }
+    @Override
+    public void sendNewPassword(String email, String newPassword) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(fromAddress);
+            message.setTo(email);
+            message.setSubject("Parking-Lot-Application: Notification about password changing");
+            message.setText("Password successfully changed, your new password is: " + newPassword);
+
+            mailSender.send(message);
+            logger.info("Email has been sent to: '" + email + "'");
+        } catch (MailException mailException) {
+            throw new FailedEmailNotificationException("Could not send the email to: '" + email +
+                    "'" + " Please try again!");
+        }
+    }
+
 }

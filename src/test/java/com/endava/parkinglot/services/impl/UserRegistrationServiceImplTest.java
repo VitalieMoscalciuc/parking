@@ -2,15 +2,19 @@ package com.endava.parkinglot.services.impl;
 
 import com.endava.parkinglot.DTO.register.UserRegistrationDtoRequest;
 import com.endava.parkinglot.DTO.register.UserRegistrationDtoResponse;
+import com.endava.parkinglot.DTO.restorePassword.UserPasswordRestoreDtoResponse;
 import com.endava.parkinglot.enums.Role;
+import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.mapper.UserMapper;
 import com.endava.parkinglot.model.UserEntity;
 import com.endava.parkinglot.model.repository.UserRepository;
+import com.endava.parkinglot.util.PasswordGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,6 +36,8 @@ class UserRegistrationServiceImplTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordGenerator passwordGenerator;
     @Mock
     private EmailNotificationServiceImpl emailNotificationService;
     @InjectMocks
@@ -181,5 +187,75 @@ class UserRegistrationServiceImplTest {
         assertEquals("Missing user ID or email.", exception.getMessage());
     }
 
+    @Test
+    void generateNewPassword_WhenUserExists_ShouldUpdatePasswordAndSendEmail() throws FailedEmailNotificationException {
+        String email = "john23@gmail.com";
+        String newPassword = "newPassword";
+        String encryptedPassword = "encryptedPassword";
+        UserEntity user = UserEntity.builder()
+                .email(email)
+                .build();
 
+        UserPasswordRestoreDtoResponse expectedResponse = UserPasswordRestoreDtoResponse.builder()
+                .message("Your password was updated successfully, new password was sent to your email")
+                .build();
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordGenerator.generateRandomPassword()).thenReturn(newPassword);
+        when(passwordEncoder.encode(newPassword)).thenReturn(encryptedPassword);
+
+        ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
+
+        UserPasswordRestoreDtoResponse response = userRegistrationService.changeUserPasswordAndSendEmail(email);
+
+        verify(userRepository).findByEmail(email);
+        verify(passwordGenerator).generateRandomPassword();
+        verify(passwordEncoder).encode(newPassword);
+        verify(userRepository).updateUserEntityByPassword(passwordCaptor.capture(), eq(email));
+        verify(emailNotificationService).sendNewPassword(eq(email), eq(newPassword));
+
+        assertEquals(expectedResponse.getMessage(), response.getMessage());
+        assertEquals(encryptedPassword, passwordCaptor.getValue());
+    }
+
+
+    @Test
+    void generateNewPassword_WhenUserDoesNotExist_ShouldThrowUserNotFoundException() {
+        String email = "nonexistent@gmail.com";
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userRegistrationService.changeUserPasswordAndSendEmail(email));
+
+        verify(userRepository).findByEmail(email);
+        verifyNoMoreInteractions(userRepository, passwordGenerator, passwordEncoder, emailNotificationService);
+    }
+
+    @Test
+    void generateNewPassword_WhenEmailNotificationFails_ShouldSetErrorMessageAndLogWarning() throws FailedEmailNotificationException {
+        String email = "john23@gmail.com";
+        String newPassword = "newPassword";
+        String encryptedPassword = "encryptedPassword";
+        UserEntity user = UserEntity.builder()
+                .email(email)
+                .build();
+        UserPasswordRestoreDtoResponse expectedResponse = UserPasswordRestoreDtoResponse.builder()
+                .message("Couldn't send email with new password, please try again !")
+                .build();
+        FailedEmailNotificationException emailException = new FailedEmailNotificationException("Email sending failed");
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+        when(passwordGenerator.generateRandomPassword()).thenReturn(newPassword);
+        when(passwordEncoder.encode(newPassword)).thenReturn(encryptedPassword);
+        doThrow(emailException).when(emailNotificationService).sendNewPassword(eq(email), eq(newPassword));
+
+        assertThrows(FailedEmailNotificationException.class, () -> {
+            userRegistrationService.changeUserPasswordAndSendEmail(email);
+        });
+
+        verify(userRepository).findByEmail(email);
+        verify(passwordGenerator).generateRandomPassword();
+        verify(passwordEncoder).encode(newPassword);
+        verify(emailNotificationService).sendNewPassword(eq(email), eq(newPassword));
+    }
 }
