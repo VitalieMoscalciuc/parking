@@ -1,10 +1,10 @@
 package com.endava.parkinglot.services.impl;
 
-import com.endava.parkinglot.DTO.UserRegistrationDtoRequest;
-import com.endava.parkinglot.DTO.UserRegistrationDtoResponse;
-import com.endava.parkinglot.exceptions.FailedEmailNotificationException;
-import com.endava.parkinglot.exceptions.UserNotFoundException;
-import com.endava.parkinglot.exceptions.ValidationCustomException;
+import com.endava.parkinglot.DTO.register.UserRegistrationDtoRequest;
+import com.endava.parkinglot.DTO.register.UserRegistrationDtoResponse;
+import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
+import com.endava.parkinglot.exceptions.user.UserNotFoundException;
+import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.mapper.UserMapper;
 import com.endava.parkinglot.enums.Role;
 import com.endava.parkinglot.model.UserEntity;

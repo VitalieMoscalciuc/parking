@@ -1,11 +1,13 @@
 package com.endava.parkinglot.exceptions.exceptionHandler;
 
-import com.endava.parkinglot.exceptions.JWTInvalidException;
-import com.endava.parkinglot.exceptions.UserNotFoundException;
-import com.endava.parkinglot.exceptions.UserNotGrantedToDoActionException;
-import com.endava.parkinglot.exceptions.ValidationCustomException;
+import com.endava.parkinglot.exceptions.parkingLot.ParkingSpaceNotFoundException;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ErrorDetails;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ValidationErrorDetails;
+import com.endava.parkinglot.exceptions.jwt.JWTInvalidException;
+import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
+import com.endava.parkinglot.exceptions.user.UserNotFoundException;
+import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
+import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -74,6 +76,22 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 request.getDescription(false));
 
         return new ResponseEntity<>(errorDetails, HttpStatus.valueOf(401));
+    }
+
+    @ExceptionHandler({ParkingLotNotFoundException.class})
+    public ResponseEntity<ErrorDetails> handleParkingLotNotFoundException(ParkingLotNotFoundException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({ParkingSpaceNotFoundException.class})
+    public ResponseEntity<ErrorDetails> handleParkingSpaceNotFoundException(ParkingSpaceNotFoundException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({JWTInvalidException.class})

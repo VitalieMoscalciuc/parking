@@ -1,17 +1,36 @@
-package com.endava.parkinglot.DTO;
+package com.endava.parkinglot.DTO.parkingLot;
 
+import com.endava.parkinglot.DTO.parkingLevel.LevelDTO;
 import com.endava.parkinglot.enums.WorkingDays;
 
 import java.util.List;
 
-public class ParkingLotCreationDtoResponse {
+public class ParkingLotDtoResponse {
+
+    private Long id;
     private String name;
     private String address;
     private String workingHours;
     private List<WorkingDays> workingDays;
-    private List<LevelDto> levels;
+    private List<LevelDTO> levels;
     private Boolean isClosed;
     private Boolean operatesNonStop;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<LevelDTO> getLevels() {
+        return levels;
+    }
+
+    public void setLevels(List<LevelDTO> levels) {
+        this.levels = levels;
+    }
 
     public String getName() {
         return name;
@@ -43,14 +62,6 @@ public class ParkingLotCreationDtoResponse {
 
     public void setWorkingDays(List<WorkingDays> workingDays) {
         this.workingDays = workingDays;
-    }
-
-    public List<LevelDto> getLevels() {
-        return levels;
-    }
-
-    public void setLevels(List<LevelDto> levels) {
-        this.levels = levels;
     }
 
     public Boolean getClosed() {

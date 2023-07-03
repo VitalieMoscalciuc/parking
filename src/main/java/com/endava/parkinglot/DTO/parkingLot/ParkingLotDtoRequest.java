@@ -1,4 +1,4 @@
-package com.endava.parkinglot.DTO;
+package com.endava.parkinglot.DTO.parkingLot;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParkingLotCreationDtoRequest {
+public class ParkingLotDtoRequest {
     @Pattern(regexp = "^(.{3,70})$", message = "Parking name should have between 3-70 characters")
     private String name;
 
@@ -36,5 +36,5 @@ public class ParkingLotCreationDtoRequest {
     private Boolean operatesNonStop;
 
     @Size(min = 1,max = 5,message = "Parking can have at least 1 level and up to 5 levels")
-    private List<LevelDto> levels;
+    private List<LevelDtoForLot> levels;
 }

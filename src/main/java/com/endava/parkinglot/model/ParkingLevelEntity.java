@@ -20,18 +20,18 @@ public class ParkingLevelEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false)
-    private char floor;
+    private Character floor;
 
-    @Column(nullable = false)
-    private String number_of_spaces;
+    @Column(name = "number_of_spaces", nullable = false)
+    private Integer numberOfSpaces;
 
     @ManyToOne
     @JoinColumn(name = "lot_id")
     private ParkingLotEntity parkingLot;
 
-    @OneToMany(mappedBy = "parkingLevelId", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "parkingLevel", cascade = CascadeType.PERSIST)
     private List<ParkingSpaceEntity> parkingSpaces;
 }

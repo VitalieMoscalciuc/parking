@@ -1,6 +1,6 @@
 package com.endava.parkinglot.services.impl;
 
-import com.endava.parkinglot.exceptions.FailedEmailNotificationException;
+import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.services.EmailNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "parking_space" (
     id SERIAL PRIMARY KEY,
-    number INT NOT NULL,
+    number VARCHAR(10) NOT NULL,
     type VARCHAR(255) CHECK
         (type IN('REGULAR', 'ACCESSIBLE', 'FAMILY')) NOT NULL DEFAULT 'REGULAR',
     state VARCHAR(255) CHECK

@@ -1,7 +1,7 @@
 package com.endava.parkinglot.security.filters;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.endava.parkinglot.exceptions.JWTInvalidException;
+import com.endava.parkinglot.exceptions.jwt.JWTInvalidException;
 import com.endava.parkinglot.security.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

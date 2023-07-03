@@ -1,6 +1,6 @@
 package com.endava.parkinglot.security.filters;
 
-import com.endava.parkinglot.exceptions.UserNotGrantedToDoActionException;
+import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.FilterErrorDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

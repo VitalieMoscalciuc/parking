@@ -1,6 +1,6 @@
-package com.endava.parkinglot.DTO;
+package com.endava.parkinglot.DTO.parkingLot;
 
-public class LevelDto {
+public class LevelDtoForLot {
 
     private char floor;
 

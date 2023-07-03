@@ -3,14 +3,8 @@ package com.endava.parkinglot.model;
 import com.endava.parkinglot.enums.SpaceState;
 import com.endava.parkinglot.enums.SpaceType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-
-import java.util.List;
 
 @Builder
 @Getter
@@ -23,10 +17,10 @@ public class ParkingSpaceEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false)
-    private int number;
+    private String number;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,7 +34,7 @@ public class ParkingSpaceEntity {
 
     @ManyToOne
     @JoinColumn(name = "parking_level_id")
-    private ParkingLevelEntity parkingLevelId;
+    private ParkingLevelEntity parkingLevel;
 
     @OneToOne
     @JoinColumn(name = "user_id")

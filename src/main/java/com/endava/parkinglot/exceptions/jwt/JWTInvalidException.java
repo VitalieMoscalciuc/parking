@@ -1,4 +1,4 @@
-package com.endava.parkinglot.exceptions;
+package com.endava.parkinglot.exceptions.jwt;
 
 public class JWTInvalidException extends RuntimeException {
 

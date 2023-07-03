@@ -1,4 +1,4 @@
-package com.endava.parkinglot.DTO;
+package com.endava.parkinglot.DTO.register;
 
 import com.endava.parkinglot.enums.Role;
 import lombok.AllArgsConstructor;
