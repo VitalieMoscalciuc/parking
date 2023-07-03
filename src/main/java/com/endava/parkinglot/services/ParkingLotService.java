@@ -12,4 +12,6 @@ public interface ParkingLotService {
     //Map<String, List<SpaceDTO>> getAllLevelsAndSpaces(Long id, String name);
 
     void addUser(Long id, Long userId);
+
+    void deleteParkingLot(Long id);
 }

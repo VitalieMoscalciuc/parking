@@ -4,6 +4,7 @@ import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
 import com.endava.parkinglot.services.ParkingLotService;
 import jakarta.validation.Valid;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,5 +59,11 @@ public class ParkingLotController {
         parkingLotService.addUser(id, userId);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Map<String, Object>> deleteParkingLot(@PathVariable("id") Long id) {
+        parkingLotService.deleteParkingLot(id);
+        return ResponseEntity.noContent().build();
     }
 }
