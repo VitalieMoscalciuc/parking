@@ -1,6 +1,6 @@
 package com.endava.parkinglot.util;
 
-import com.endava.parkinglot.DTO.UserRegistrationDtoRequest;
+import com.endava.parkinglot.DTO.register.UserRegistrationDtoRequest;
 import com.endava.parkinglot.model.UserEntity;
 import com.endava.parkinglot.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

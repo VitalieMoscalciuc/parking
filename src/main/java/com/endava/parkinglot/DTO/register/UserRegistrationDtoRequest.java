@@ -1,4 +1,4 @@
-package com.endava.parkinglot.DTO;
+package com.endava.parkinglot.DTO.register;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

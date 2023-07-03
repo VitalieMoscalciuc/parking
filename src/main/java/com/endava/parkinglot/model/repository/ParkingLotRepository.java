@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Long> {
 
-    @Query("SELECT lot FROM ParkingLotEntity lot WHERE lot.name LIKE CONCAT('%', :name, '%') OR :name IS NULL")
-    List<ParkingLotEntity> search(String name);
+    @Query("SELECT lot FROM ParkingLotEntity lot WHERE LOWER(lot.name) LIKE CONCAT('%', LOWER(:searchString), '%') OR :searchString IS NULL")
+    List<ParkingLotEntity> search(String searchString);
 }

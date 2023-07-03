@@ -1,4 +1,4 @@
-package com.endava.parkinglot.exceptions;
+package com.endava.parkinglot.exceptions.user;
 
 public class UserNotFoundException extends RuntimeException {
     public UserNotFoundException(String message) {

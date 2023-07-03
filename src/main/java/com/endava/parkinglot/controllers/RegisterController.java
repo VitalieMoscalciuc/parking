@@ -1,9 +1,9 @@
 package com.endava.parkinglot.controllers;
 
-import com.endava.parkinglot.DTO.UserRegistrationDtoRequest;
-import com.endava.parkinglot.DTO.UserRegistrationDtoResponse;
+import com.endava.parkinglot.DTO.register.UserRegistrationDtoRequest;
+import com.endava.parkinglot.DTO.register.UserRegistrationDtoResponse;
 import com.endava.parkinglot.DTO.auth.AuthAndRegistrationResponseDTO;
-import com.endava.parkinglot.exceptions.ValidationCustomException;
+import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.security.JWTUtil;
 import com.endava.parkinglot.services.UserRegistrationService;
 import com.endava.parkinglot.util.UserValidator;

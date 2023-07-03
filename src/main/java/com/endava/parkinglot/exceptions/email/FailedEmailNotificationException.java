@@ -1,4 +1,4 @@
-package com.endava.parkinglot.exceptions;
+package com.endava.parkinglot.exceptions.email;
 
 public class FailedEmailNotificationException extends RuntimeException{
     public FailedEmailNotificationException(String message) {
