@@ -90,6 +90,7 @@ public class ParkingMapper {
 
     public ParkingLotDtoResponse mapEntityToResponseDto(ParkingLotEntity entity) {
         ParkingLotDtoResponse response = new ParkingLotDtoResponse();
+        response.setId(entity.getId());
         response.setName(entity.getName());
         response.setAddress(entity.getAddress());
 

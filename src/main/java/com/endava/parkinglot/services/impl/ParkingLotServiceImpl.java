@@ -5,9 +5,9 @@ import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
 import com.endava.parkinglot.enums.SpaceState;
 import com.endava.parkinglot.enums.SpaceType;
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
-import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
+import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.mapper.ParkingMapper;
 import com.endava.parkinglot.model.ParkingLevelEntity;
 import com.endava.parkinglot.model.ParkingLotEntity;
@@ -20,6 +20,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,18 +39,29 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
     @Override
     public List<ParkingLotDtoResponse> getAllParkingLot(String searchString) {
-        if (searchString == null) logger.info("Going to look for all the lots");
+        String email = getUsernameOfAuthenticatedUser();
+
+        if (searchString == null) logger.info("Going to look for all the lots for user with email = " + email);
         else logger.info("Going to look for lots with name like: " + searchString);
 
+        List<ParkingLotEntity> lots = parkingLotRepository.search(searchString, email);
+
+        logger.info("Found " + lots.size() + " parking lots based on your query.");
+
         return parkingMapper
-                .mapListEntityToListResponseDto(
-                        parkingLotRepository.search(searchString)
-                );
+                .mapListEntityToListResponseDto(lots);
     }
 
     @Override
     public ParkingLotDtoResponse getOneParkingLot(Long id) {
         logger.info("Going to look for one lot with such id: " + id);
+        String email = getUsernameOfAuthenticatedUser();
+
+        if (!parkingLotRepository.checkIfUserExistsOnParkingLotByUserEmail(email, id)){
+            logger.error("User with email: " + email + " is not present on parking lot with ID = " + id);
+            throw new NoSuchUserOnParkingLotException("User with email: " + email + " is not present on parking lot with ID = " + id);
+        }
+
         return parkingMapper.mapEntityToResponseDto(
                 parkingLotRepository.findById(id)
                         .orElseThrow(() -> {
@@ -72,22 +85,6 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         ParkingLotEntity savedParkingLot = parkingLotRepository.save(parkingLot);
 
         return parkingMapper.mapEntityToResponseDto(savedParkingLot);
-    }
-
-    private List<ParkingSpaceEntity> organizeSpaces(ParkingLevelEntity levelEntity) {
-        List<ParkingSpaceEntity> spaces = new ArrayList<>();
-
-        int numberOfSpaces = levelEntity.getNumberOfSpaces();
-        for (int i = 1; i <= numberOfSpaces; i++) {
-            String var = String.format("%03d", i);
-            ParkingSpaceEntity space = ParkingSpaceEntity.builder()
-                    .number(String.join("-", String.valueOf(levelEntity.getFloor()), var))
-                    .type(SpaceType.REGULAR)
-                    .state(SpaceState.AVAILABLE)
-                    .build();
-            spaces.add(space);
-        }
-        return spaces;
     }
 
     @Override
@@ -135,9 +132,9 @@ public class ParkingLotServiceImpl implements ParkingLotService {
                         (() -> new UserNotFoundException("User with ID " + userId + " not found."));
 
         if(!parkingLotRepository
-                .checkIfUserExistsOnParkingLot(userId,parkingLotId)){
+                .checkIfUserExistsOnParkingLotByUserId(userId,parkingLotId)){
             throw new NoSuchUserOnParkingLotException(
-                    "User with ID " + userId + " is not present on parking lot with ID "+parkingLotId);
+                    "User with ID " + userId + " is not present on parking lot with ID " + parkingLotId);
         }
 
         logger.info("Removing User with ID "+ userId + " from parking lot with ID "+ parkingLotId);
@@ -152,4 +149,31 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             logger.warn("Email was not sent, user not added to parking lot: {}", user.getEmail());
         }
     }
+
+    private String getUsernameOfAuthenticatedUser(){
+        UserDetails userDetails = (UserDetails) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        return userDetails.getUsername();
+    }
+
+
+    private List<ParkingSpaceEntity> organizeSpaces(ParkingLevelEntity levelEntity) {
+        List<ParkingSpaceEntity> spaces = new ArrayList<>();
+
+        int numberOfSpaces = levelEntity.getNumberOfSpaces();
+        for (int i = 1; i <= numberOfSpaces; i++) {
+            String var = String.format("%03d", i);
+            ParkingSpaceEntity space = ParkingSpaceEntity.builder()
+                    .number(String.join("-", String.valueOf(levelEntity.getFloor()), var))
+                    .type(SpaceType.REGULAR)
+                    .state(SpaceState.AVAILABLE)
+                    .build();
+            spaces.add(space);
+        }
+        return spaces;
+    }
+
 }

@@ -9,11 +9,7 @@ public interface ParkingLotService {
     ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotDtoRequest);
     List<ParkingLotDtoResponse> getAllParkingLot(String name);
     ParkingLotDtoResponse getOneParkingLot(Long id);
-    //Map<String, List<SpaceDTO>> getAllLevelsAndSpaces(Long id, String name);
-
     void addUser(Long id, Long userId);
-
     void deleteUserFromParkingLot(Long userId, Long parkingLotId);
-
     void deleteParkingLot(Long id);
 }
