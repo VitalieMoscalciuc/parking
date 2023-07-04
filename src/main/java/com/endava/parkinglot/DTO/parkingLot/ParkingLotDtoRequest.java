@@ -1,5 +1,6 @@
 package com.endava.parkinglot.DTO.parkingLot;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -36,5 +37,5 @@ public class ParkingLotDtoRequest {
     private Boolean operatesNonStop;
 
     @Size(min = 1,max = 5,message = "Parking can have at least 1 level and up to 5 levels")
-    private List<LevelDtoForLot> levels;
+    private List<@Valid LevelDtoForLot> levels;
 }

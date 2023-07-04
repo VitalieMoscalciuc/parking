@@ -26,7 +26,8 @@ public class OnlyAdminEndpointCheckFilter extends OncePerRequestFilter {
         this.adminEndpoints = List.of(
                 Pattern.compile("^http://localhost:8080/api/parkingLot/\\d+/addUser$"),
                 Pattern.compile("^http://localhost:8080/api/parkingLot/\\d+/deleteUser$"),
-                Pattern.compile("^http://localhost:8080/api/register/grantAdmin$")
+                Pattern.compile("^http://localhost:8080/api/register/grantAdmin$"),
+                Pattern.compile("^http://localhost:8080/api/parkingLot/create$")
         );
     }
 

@@ -2,24 +2,31 @@ package com.endava.parkinglot.services.impl;
 
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
+import com.endava.parkinglot.enums.SpaceState;
+import com.endava.parkinglot.enums.SpaceType;
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.mapper.ParkingMapper;
+import com.endava.parkinglot.model.ParkingLevelEntity;
 import com.endava.parkinglot.model.ParkingLotEntity;
+import com.endava.parkinglot.model.ParkingSpaceEntity;
 import com.endava.parkinglot.model.UserEntity;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
 import com.endava.parkinglot.model.repository.UserRepository;
 import com.endava.parkinglot.services.ParkingLotService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ParkingLotServiceImpl implements ParkingLotService {
 
     private final ParkingLotRepository parkingLotRepository;
@@ -27,14 +34,6 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     private final UserRepository userRepository;
     private final EmailNotificationServiceImpl emailNotificationService;
     private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
-
-    public ParkingLotServiceImpl(ParkingLotRepository parkingLotRepository, ParkingMapper parkingMapper, UserRepository userRepository, EmailNotificationServiceImpl emailNotificationService) {
-        this.parkingLotRepository = parkingLotRepository;
-        this.parkingMapper = parkingMapper;
-
-        this.userRepository = userRepository;
-        this.emailNotificationService = emailNotificationService;
-    }
 
     @Override
     public List<ParkingLotDtoResponse> getAllParkingLot(String searchString) {
@@ -59,24 +58,36 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         );
     }
 
-//    @Override
-//    public Map<String, List<SpaceDTO>> getAllLevelsAndSpaces(Long id, String name){
-//        ParkingLotEntity entity = parkingLotRepository.findById(id)
-//                .orElseThrow(ParkingLotNotFoundException::new);
-//
-//        List<LevelDTO> levels = levelMapper.fromEntityListToDTOList(entity.getLevels());
-//        Map<String, List<SpaceDTO>> response = new HashMap<>();
-//
-//        for (LevelDTO level : levels){
-//            response.put(String.valueOf(level.getFloor()), level.getSpots());
-//        }
-//
-//        return response;
-//    }
-
     @Override
-    public ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotDtoRequest) {
-        return null;
+    @Transactional
+    public ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotCreationDtoRequest) {
+        ParkingLotEntity parkingLot = parkingMapper.mapRequestDtoToEntity(parkingLotCreationDtoRequest);
+
+        for(ParkingLevelEntity levelEntity: parkingLot.getLevels()) {
+            List<ParkingSpaceEntity> spaces = organizeSpaces(levelEntity);
+            levelEntity.setParkingSpaces(spaces);
+            levelEntity.addSpacesToLevel(spaces);
+        }
+
+        ParkingLotEntity savedParkingLot = parkingLotRepository.save(parkingLot);
+
+        return parkingMapper.mapEntityToResponseDto(savedParkingLot);
+    }
+
+    private List<ParkingSpaceEntity> organizeSpaces(ParkingLevelEntity levelEntity) {
+        List<ParkingSpaceEntity> spaces = new ArrayList<>();
+
+        int numberOfSpaces = levelEntity.getNumberOfSpaces();
+        for (int i = 1; i <= numberOfSpaces; i++) {
+            String var = String.format("%03d", i);
+            ParkingSpaceEntity space = ParkingSpaceEntity.builder()
+                    .number(String.join("-", String.valueOf(levelEntity.getFloor()), var))
+                    .type(SpaceType.REGULAR)
+                    .state(SpaceState.AVAILABLE)
+                    .build();
+            spaces.add(space);
+        }
+        return spaces;
     }
 
     @Override
@@ -142,4 +153,3 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         }
     }
 }
-
