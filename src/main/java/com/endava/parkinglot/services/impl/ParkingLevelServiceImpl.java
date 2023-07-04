@@ -18,7 +18,7 @@ public class ParkingLevelServiceImpl implements ParkingLevelService {
 
     private final ParkingLevelMapper levelMapper;
     private final ParkingLevelRepository parkingLevelRepository;
-    private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParkingLevelServiceImpl.class);
 
     @Autowired
     public ParkingLevelServiceImpl(ParkingLevelMapper levelMapper, ParkingLevelRepository parkingLevelRepository) {
