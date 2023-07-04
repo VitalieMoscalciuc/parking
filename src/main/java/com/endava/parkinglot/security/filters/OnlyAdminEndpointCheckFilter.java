@@ -14,20 +14,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Component
 public class OnlyAdminEndpointCheckFilter extends OncePerRequestFilter {
 
-    private final List<String> adminEndpoints;
+    private final List<Pattern> adminEndpoints;
 
     public OnlyAdminEndpointCheckFilter() {
-        this.adminEndpoints = new ArrayList<>(
-                List.of(
-                        "http://localhost:8080/api/register/grantAdmin",
-                        "http://localhost:8080/api/parkingLot/id/addUser"
-                )
+        this.adminEndpoints = List.of(
+                Pattern.compile("^http://localhost:8080/api/parkingLot/\\d+/addUser$"),
+                Pattern.compile("^http://localhost:8080/api/parkingLot/\\d+/deleteUser$"),
+                Pattern.compile("^http://localhost:8080/api/register/grantAdmin$")
         );
     }
 
@@ -35,7 +34,7 @@ public class OnlyAdminEndpointCheckFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String endpoint = request.getRequestURL().toString();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && adminEndpoints.contains(endpoint)) {
+        if (authentication != null && matchesDynamicPattern(endpoint)) {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             String role = "";
             for (GrantedAuthority authority : userDetails.getAuthorities()) {
@@ -48,5 +47,14 @@ public class OnlyAdminEndpointCheckFilter extends OncePerRequestFilter {
 
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean matchesDynamicPattern(String endpoint) {
+        for (Pattern pattern : adminEndpoints) {
+            if (pattern.matcher(endpoint).matches()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
