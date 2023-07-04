@@ -13,5 +13,7 @@ public interface ParkingLotService {
 
     void addUser(Long id, Long userId);
 
+    void deleteUserFromParkingLot(Long userId, Long parkingLotId);
+
     void deleteParkingLot(Long id);
 }
