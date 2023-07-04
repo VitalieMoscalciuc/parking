@@ -66,4 +66,11 @@ public class ParkingLotController {
         parkingLotService.deleteParkingLot(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{parkingLotId}/deleteUser")
+    public ResponseEntity<HttpStatus> deleteUserFromParkingLot(@PathVariable Long parkingLotId
+            ,@RequestParam(value = "userId") Long userId) {
+        parkingLotService.deleteUserFromParkingLot(userId, parkingLotId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
