@@ -2,6 +2,7 @@ package com.endava.parkinglot.model;
 
 import com.endava.parkinglot.enums.Role;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -56,9 +57,11 @@ public class UserEntity {
     @Column(name = "role")
     private Role role;
 
-    @ManyToMany
-    @JoinTable(name = "user_parking_lot",
+    @ManyToMany(cascade = CascadeType.ALL )
+    @JoinTable(
+            name = "user_parking_lot",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "lot_id"))
+            inverseJoinColumns = @JoinColumn(name = "lot_id")
+    )
     Set<ParkingLotEntity> parkingLots;
 }
