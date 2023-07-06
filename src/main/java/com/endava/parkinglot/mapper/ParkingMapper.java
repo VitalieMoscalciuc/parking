@@ -17,8 +17,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +32,15 @@ public class ParkingMapper {
 
     public ParkingLotEntity mapRequestDtoToEntity(ParkingLotDtoRequest parkingLotDtoRequest) {
         if (parkingLotDtoRequest.getOperatesNonStop()) {
-            parkingLotDtoRequest.setWorkingDays(Set.of("SUNDAY", "MONDAY", "TUESDAY",
-                    "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"));
+            Set<String> set = new LinkedHashSet<>();
+            set.add("SUNDAY");
+            set.add("MONDAY");
+            set.add("TUESDAY");
+            set.add("WEDNESDAY");
+            set.add("THURSDAY");
+            set.add("FRIDAY");
+            set.add("SATURDAY");
+            parkingLotDtoRequest.setWorkingDays(set);
             parkingLotDtoRequest.setWorkingHours("00:00-23:59");
         }
 
