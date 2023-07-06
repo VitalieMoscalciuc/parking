@@ -18,10 +18,10 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParkingLotDtoRequest {
-    @Pattern(regexp = "^(.{3,70})$", message = "Parking name should have between 3-70 characters")
+    @Pattern(regexp = "^(.{1,70})$", message = "Parking name should have between 1-70 characters")
     private String name;
 
-    @Pattern(regexp = "^(.{3,70})$", message = "Parking address should have between 3-70 characters")
+    @Pattern(regexp = "^(.{1,70})$", message = "Parking address should have between 1-70 characters")
     private String address;
 
     @Pattern(regexp = "^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$",
