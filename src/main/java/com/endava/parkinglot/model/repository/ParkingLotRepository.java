@@ -35,4 +35,6 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
 
 
     Optional<ParkingLotEntity> findByName(String name);
+
+    Optional<ParkingLotEntity> findByAddress(String address);
 }
