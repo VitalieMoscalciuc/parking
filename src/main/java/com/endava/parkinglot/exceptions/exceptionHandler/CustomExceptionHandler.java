@@ -111,4 +111,11 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+//    @ExceptionHandler({Exception.class})
+//    public ResponseEntity<ErrorDetails> handleAllExceptions(Exception ex, WebRequest request) {
+//        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
+//                request.getDescription(false));
+//
+//        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+//    }
 }
