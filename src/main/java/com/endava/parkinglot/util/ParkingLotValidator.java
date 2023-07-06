@@ -26,9 +26,13 @@ public class ParkingLotValidator implements Validator {
         ParkingLotDtoRequest dtoRequest = (ParkingLotDtoRequest) target;
 
         Optional<ParkingLotEntity> nameCheck = parkingLotRepository.findByName(dtoRequest.getName());
+        Optional<ParkingLotEntity> addressCheck = parkingLotRepository.findByAddress(dtoRequest.getAddress());
 
         if (nameCheck.isPresent()) {
             errors.rejectValue("name", "", "The parkingLot with this name is already registered in the system !");
+        }
+        if (addressCheck.isPresent()) {
+            errors.rejectValue("address", "", "The parkingLot with this address is already registered in the system !");
         }
     }
 }
