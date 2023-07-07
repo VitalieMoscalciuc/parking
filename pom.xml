@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.endava</groupId>
 	<artifactId>parking-log</artifactId>
-	<version>0.0.13-SNAPSHOT</version>
+	<version>0.0.14-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>parking-log</name>
 	<description>Internal project for Spring Java Internship 2023</description>
@@ -138,6 +138,22 @@
 
 	</dependencies>
 	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<mainClass>com.mypackage.MyClass</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+
 <!--		<plugins>-->
 <!--			<plugin>-->
 <!--				<groupId>org.springframework.boot</groupId>-->

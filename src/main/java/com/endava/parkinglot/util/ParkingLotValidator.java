@@ -10,6 +10,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -36,10 +38,18 @@ public class ParkingLotValidator implements Validator {
         }
 
         if (dtoRequest.getLevels() != null) {
+            Set<String> duplicateChecking = new HashSet<>();
             for (LevelDtoForLot levelDtoForLot : dtoRequest.getLevels()) {
-                if (levelDtoForLot.getFloor() != null && !Pattern.matches("^[A-Z]$", Character.toString(levelDtoForLot.getFloor()))) {
-                    errors.rejectValue("levels", "", "Level' floor can be only single alphabetical character! " +
-                            "Character you typed for floor: '" + levelDtoForLot.getFloor() + "' is invalid!");
+                if (levelDtoForLot.getFloor() != null) {
+                    if (!Pattern.matches("^[A-Z]$", Character.toString(levelDtoForLot.getFloor()))) {
+                        errors.rejectValue("levels", "", "Level' floor can be only single alphabetical character! " +
+                                "Character you typed for floor: '" + levelDtoForLot.getFloor() + "' is invalid!");
+                    }
+                    if (duplicateChecking.contains(String.valueOf(levelDtoForLot.getFloor()))) {
+                        errors.rejectValue("levels", "", "You try to add duplicate floor: '" +
+                                levelDtoForLot.getFloor() + "'.");
+                    }
+                    duplicateChecking.add(String.valueOf(levelDtoForLot.getFloor()));
                 }
             }
         }
