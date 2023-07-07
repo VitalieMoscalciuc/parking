@@ -4,7 +4,6 @@ import com.endava.parkinglot.DTO.parkingLevel.LevelDTO;
 import com.endava.parkinglot.DTO.parkingLot.LevelDtoForLot;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
-
 import com.endava.parkinglot.enums.WorkingDays;
 import com.endava.parkinglot.model.ParkingLevelEntity;
 import com.endava.parkinglot.model.ParkingLotEntity;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class ParkingMapper {
     private final ModelMapperOptional modelMapperOptional;
 
     public ParkingLotEntity mapRequestDtoToEntity(ParkingLotDtoRequest parkingLotDtoRequest) {
-        if (parkingLotDtoRequest.getOperatesNonStop()) {
+        if (parkingLotDtoRequest.isOperatesNonStop()) {
             Set<String> set = new LinkedHashSet<>();
             set.add("SUNDAY");
             set.add("MONDAY");
@@ -51,7 +49,7 @@ public class ParkingMapper {
                 .endWorkingHour(stringToTime(parkingLotDtoRequest.getWorkingHours(), 1))
                 .workingDays(stringToWorkinDayList(parkingLotDtoRequest.getWorkingDays()))
                 .levels(toLevelEntityList(parkingLotDtoRequest.getLevels()))
-                .isClosed(parkingLotDtoRequest.getIsClosed())
+                .isClosed(parkingLotDtoRequest.isClosed())
                 .build();
 
         lot.getWorkingDays().forEach(day -> day.setParkingLot(lot));

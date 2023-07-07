@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.util.List;
 import java.util.Set;
 
@@ -36,11 +37,9 @@ public class ParkingLotDtoRequest {
     @Size(min = 1, message = "At least one day of the week must be selected")
     private Set<String> workingDays;
 
-    @NotNull(message = "'isClosed' field is mandatory")
-    private Boolean isClosed;
+    private boolean isClosed;
 
-    @NotNull(message = "'OperatesNonStop' field is mandatory")
-    private Boolean operatesNonStop;
+    private boolean operatesNonStop;
 
     @NotNull(message = "Parking lot must have at least one level")
     @Size(min = 1,max = 5,message = "Parking can have at least 1 level and up to 5 levels")
