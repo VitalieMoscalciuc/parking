@@ -34,7 +34,7 @@ public class ParkingLotValidator implements Validator {
         }
 
         for (LevelDtoForLot levelDtoForLot : dtoRequest.getLevels()){
-            if (!Pattern.matches("^[A-Z]$" ,Character.toString(levelDtoForLot.getFloor()))){
+            if (levelDtoForLot.getFloor() != null && !Pattern.matches("^[A-Z]$" ,Character.toString(levelDtoForLot.getFloor())) ){
                 errors.rejectValue("levels", "", "Level' floor can be only single alphabetical character! " +
                         "Character you typed for floor: '" + levelDtoForLot.getFloor() + "' is invalid!");
             }
