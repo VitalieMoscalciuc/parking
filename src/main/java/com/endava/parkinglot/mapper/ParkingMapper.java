@@ -39,12 +39,16 @@ public class ParkingMapper {
             set.add("FRIDAY");
             set.add("SATURDAY");
             parkingLotDtoRequest.setWorkingDays(set);
-            parkingLotDtoRequest.setWorkingHours("00:00-23:59");
+            parkingLotDtoRequest.setWorkingHours("00:00-23:59:59");
+        }
+
+        if (parkingLotDtoRequest.getWorkingHours().equals("00:00-00:00")) {
+            parkingLotDtoRequest.setWorkingHours("00:00-23:59:59");
         }
 
         var lot = ParkingLotEntity.builder()
-                .name(parkingLotDtoRequest.getName())
-                .address(parkingLotDtoRequest.getAddress())
+                .name(parkingLotDtoRequest.getName().replaceAll("\\s+", " "))
+                .address(parkingLotDtoRequest.getAddress().replaceAll("\\s+", " "))
                 .beginWorkingHour(stringToTime(parkingLotDtoRequest.getWorkingHours(), 0))
                 .endWorkingHour(stringToTime(parkingLotDtoRequest.getWorkingHours(), 1))
                 .workingDays(stringToWorkinDayList(parkingLotDtoRequest.getWorkingDays()))
@@ -59,9 +63,8 @@ public class ParkingMapper {
     }
 
     private LocalTime stringToTime(String hours, int i) {
-        String[] beginHours = hours.split("-");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        return LocalTime.parse(beginHours[i], formatter);
+        String[] workingHours = hours.split("-");
+        return LocalTime.parse(workingHours[i]);
     }
 
     private List<WorkingDaysEntity> stringToWorkinDayList(Set<String> days) {
