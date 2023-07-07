@@ -57,7 +57,7 @@ public class UserEntity {
     @Column(name = "role")
     private Role role;
 
-    @ManyToMany(cascade = CascadeType.ALL )
+    @ManyToMany
     @JoinTable(
             name = "user_parking_lot",
             joinColumns = @JoinColumn(name = "user_id"),
