@@ -27,27 +27,35 @@ public class ParkingLotValidator implements Validator {
     public void validate(Object target, Errors errors) {
         ParkingLotDtoRequest dtoRequest = (ParkingLotDtoRequest) target;
 
-        for (String day : dtoRequest.getWorkingDays()){
-            if (!validateTheDay(day)){
-                errors.rejectValue("workingDays", "", "day you noticed: '" + day + "' is invalid !");
+        if (dtoRequest.getWorkingDays() != null) {
+            for (String day : dtoRequest.getWorkingDays()) {
+                if (!validateTheDay(day)) {
+                    errors.rejectValue("workingDays", "", "day you noticed: '" + day + "' is invalid !");
+                }
             }
         }
 
-        for (LevelDtoForLot levelDtoForLot : dtoRequest.getLevels()){
-            if (levelDtoForLot.getFloor() != null && !Pattern.matches("^[A-Z]$" ,Character.toString(levelDtoForLot.getFloor())) ){
-                errors.rejectValue("levels", "", "Level' floor can be only single alphabetical character! " +
-                        "Character you typed for floor: '" + levelDtoForLot.getFloor() + "' is invalid!");
+        if (dtoRequest.getLevels() != null) {
+            for (LevelDtoForLot levelDtoForLot : dtoRequest.getLevels()) {
+                if (levelDtoForLot.getFloor() != null && !Pattern.matches("^[A-Z]$", Character.toString(levelDtoForLot.getFloor()))) {
+                    errors.rejectValue("levels", "", "Level' floor can be only single alphabetical character! " +
+                            "Character you typed for floor: '" + levelDtoForLot.getFloor() + "' is invalid!");
+                }
             }
         }
 
-        Optional<ParkingLotEntity> nameCheck = parkingLotRepository.findByName(dtoRequest.getName());
-        Optional<ParkingLotEntity> addressCheck = parkingLotRepository.findByAddress(dtoRequest.getAddress());
-
-        if (nameCheck.isPresent()) {
-            errors.rejectValue("name", "", "The parkingLot with this name is already registered in the system !");
+        if (dtoRequest.getName() != null) {
+            Optional<ParkingLotEntity> nameCheck = parkingLotRepository.findByName(dtoRequest.getName());
+            if (nameCheck.isPresent()) {
+                errors.rejectValue("name", "", "The parkingLot with this name is already registered in the system !");
+            }
         }
-        if (addressCheck.isPresent()) {
-            errors.rejectValue("address", "", "The parkingLot with this address is already registered in the system !");
+
+        if ( dtoRequest.getAddress() != null) {
+            Optional<ParkingLotEntity> addressCheck = parkingLotRepository.findByAddress(dtoRequest.getAddress());
+            if (addressCheck.isPresent()) {
+                errors.rejectValue("address", "", "The parkingLot with this address is already registered in the system !");
+            }
         }
     }
 
