@@ -1,7 +1,7 @@
 package com.endava.parkinglot.util;
 
+import com.endava.parkinglot.DTO.parkingLot.LevelDtoForLot;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
-import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.model.ParkingLotEntity;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Component
@@ -29,6 +30,14 @@ public class ParkingLotValidator implements Validator {
         for (String day : dtoRequest.getWorkingDays()){
             if (!validateTheDay(day)){
                 errors.rejectValue("workingDays", "", "day you noticed: '" + day + "' is invalid !");
+            }
+        }
+
+        for (LevelDtoForLot levelDtoForLot : dtoRequest.getLevels()){
+            if (!Pattern.matches("^[A-Z]$" ,Character.toString(levelDtoForLot.getFloor()))){
+                System.out.println("AAA");
+                errors.rejectValue("levels", "", "Level' floor can be only single alphabetical character! " +
+                        "Character you typed for floor: '" + levelDtoForLot.getFloor() + "' is invalid!");
             }
         }
 
