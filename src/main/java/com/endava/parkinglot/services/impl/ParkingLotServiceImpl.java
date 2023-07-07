@@ -35,7 +35,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     private final ParkingMapper parkingMapper;
     private final UserRepository userRepository;
     private final EmailNotificationServiceImpl emailNotificationService;
-    private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParkingLotServiceImpl.class);
 
     @Override
     public List<ParkingLotDtoResponse> getAllParkingLot(String searchString) {
@@ -87,22 +87,35 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return parkingMapper.mapEntityToResponseDto(savedParkingLot);
     }
 
+
     @Override
     @Transactional
     public void addUser(Long id, Long userId) {
-        ParkingLotEntity parkingLot = parkingLotRepository.findById(id).orElseThrow(
-                () -> new ParkingLotNotFoundException(id)
+        logger.info("Begin to add user in the parking lot");
+
+        ParkingLotEntity parkingLot = parkingLotRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Fail to add user in Parking Lot. Parking Lot with id = " + id + " not found!");
+                    return new ParkingLotNotFoundException(id);
+                }
         );
 
-        UserEntity user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("User with ID " + userId + " not found.")
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    logger.error("Fail to add user in Parking Lot. User with id = " + userId + " not found!");
+                    return new UserNotFoundException("User with ID " + userId + " not found.");
+                }
         );
+
+        logger.info("Going to add user with id = " + userId + " in parking lot with id = " + id);
 
         parkingLot.getUsers().add(user);
         user.getParkingLots().add(parkingLot);
 
         parkingLotRepository.save(parkingLot);
         userRepository.save(user);
+
+        logger.info("User is added to the parking lot");
 
         try {
             emailNotificationService.sendNotificationAboutAddedToParkingLot(user.getEmail(), parkingLot.getName());
@@ -113,34 +126,47 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
     @Override
     public void deleteParkingLot(Long id) {
+        logger.info("Trying to delete parking lot from system");
+
         if (!parkingLotRepository.existsById(id)) {
+            logger.error("There is no parking lot with id = " + id);
             throw new ParkingLotNotFoundException(id);
         }
 
         parkingLotRepository.deleteById(id);
+        logger.info("Parking lot with id = " + id + " was successfully deleted.");
     }
 
     @Transactional
     @Override
     public void deleteUserFromParkingLot(Long userId, Long parkingLotId) {
         ParkingLotEntity parkingLot = parkingLotRepository
-                .findById(parkingLotId).orElseThrow
-                        (() -> new ParkingLotNotFoundException(parkingLotId));
+                .findById(parkingLotId)
+                    .orElseThrow(() -> {
+                        logger.error("Fail to add user in Parking Lot. Parking Lot with id = " + parkingLotId + " not found!");
+                        return new ParkingLotNotFoundException(parkingLotId);
+                    });
 
         UserEntity user = userRepository
-                .findById(userId).orElseThrow
-                        (() -> new UserNotFoundException("User with ID " + userId + " not found."));
+                .findById(userId)
+                    .orElseThrow(() -> {
+                        logger.error("Fail to add user in Parking Lot. User with id = " + userId + " not found!");
+                        return new UserNotFoundException("User with ID " + userId + " not found.");
+                    });
 
         if(!parkingLotRepository
                 .checkIfUserExistsOnParkingLotByUserId(userId,parkingLotId)){
+            logger.error("User you try to delete from parking lot with id = " + parkingLotId + " was not originally added in this parking lot.");
             throw new NoSuchUserOnParkingLotException(
-                    "User with ID " + userId + " is not present on parking lot with ID " + parkingLotId);
+                    "User with ID " + userId + " is not present on parking lot with ID "+parkingLotId);
         }
 
         logger.info("Removing User with ID "+ userId + " from parking lot with ID "+ parkingLotId);
 
         parkingLotRepository
                 .removeUserFromParkingLot(userId, parkingLotId);
+
+        logger.info("User was successfully deleted from parking lot.");
 
         try {
             emailNotificationService

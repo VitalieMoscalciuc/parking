@@ -51,8 +51,11 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     @Override
     @Transactional(rollbackOn = FailedEmailNotificationException.class)
     public UserPasswordRestoreDtoResponse changeUserPasswordAndSendEmail(String email) {
-        userRepository.findByEmail(email).orElseThrow(
-                () -> new UserNotFoundException("User with email " + email + " not found in system."));
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.error("User with email " + email + " not found in system.");
+                    return new UserNotFoundException("User with email " + email + " not found in system.");
+                });
         var response = new UserPasswordRestoreDtoResponse();
         var newPassword = passwordGenerator.generateRandomPassword();
         var encryptedPassword = passwordEncoder.encode(newPassword);
@@ -60,11 +63,13 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         userRepository.updateUserEntityByPassword(encryptedPassword, email);
         emailNotificationService.sendNewPassword(email,newPassword);
         response.setMessage("Your password was updated successfully, new password was sent to your email");
+        logger.info("Password was successfully changed.");
         return response;
     }
 
     @Override
     public UserRegistrationDtoResponse register(UserRegistrationDtoRequest registrationDtoRequest) {
+        logger.info("Trying to register new user.");
         UserEntity user;
         user = userMapper.mapRequestDtoToEntity(registrationDtoRequest);
 
@@ -74,36 +79,50 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         user.setRole(Role.REGULAR);
 
         UserEntity savedUser = userRepository.save(user);
+        logger.info("User was successfully registered in the system.");
         return userMapper.mapEntityToResponseDto(savedUser);
     }
 
     @Transactional
     public UserEntity grantAdminPermissionsById(Long userId) {
-        UserEntity user = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("User with ID " + userId + " not found.")
+        logger.info("Trying to grant admin permissions to user with id = " + userId);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    logger.error("User with id = " + userId + " not found in system.");
+                    return new UserNotFoundException("User with ID " + userId + " not found.");
+                }
         );
         user.setRole(Role.ADMIN);
+        logger.info("Role was successfully granted");
         return userRepository.save(user);
     }
 
     @Transactional
     public UserEntity grantAdminPermissionsByEmail(String email) {
-        UserEntity user = userRepository.findByEmail(email).orElseThrow(
-                () -> new UserNotFoundException("User with email " + email + " not found.")
+        logger.info("Trying to grant admin permissions to user with email: " + email);
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.error("User with email: " + email + " not found in system.");
+                    return new UserNotFoundException("User with email " + email + " not found.");
+                }
         );
         user.setRole(Role.ADMIN);
+        logger.info("Role was successfully granted");
         return userRepository.save(user);
     }
 
     private void validateEmail(String email) {
+        logger.info("Validating email to grant admin permissions...");
         if (email != null) {
             EmailValidator validator = EmailValidator.getInstance();
             if (!validator.isValid(email)) {
                 Map<String, String> errors = new HashMap<>();
                 errors.put("email", "Invalid email. It should be like: 'example@email.com'");
+                logger.error("Email is not valid.");
                 throw new ValidationCustomException(errors);
             }
         }
+        logger.info("Email was successfully validated.");
     }
 
     @Override
@@ -115,6 +134,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         } else if (email != null) {
             entity = grantAdminPermissionsByEmail(email);
         } else {
+            logger.error("Missing user ID or email.");
             throw new UserNotFoundException("Missing user ID or email.");
         }
 

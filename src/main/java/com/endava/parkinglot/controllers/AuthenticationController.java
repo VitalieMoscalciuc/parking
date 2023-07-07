@@ -3,7 +3,10 @@ package com.endava.parkinglot.controllers;
 import com.endava.parkinglot.DTO.auth.AuthAndRegistrationResponseDTO;
 import com.endava.parkinglot.DTO.auth.AuthenticationDTO;
 import com.endava.parkinglot.security.JWTUtil;
+import com.endava.parkinglot.services.impl.UserRegistrationServiceImpl;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
 
     private final JWTUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+
 
     @Autowired
     public AuthenticationController(JWTUtil jwtUtil, AuthenticationManager authenticationManager) {
@@ -34,11 +37,16 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<AuthAndRegistrationResponseDTO> authenticate(@RequestBody @Valid AuthenticationDTO authenticationDTO){
+        logger.info("Trying to authenticate user with username: " + authenticationDTO.getEmail());
+
         String role = "";
         UsernamePasswordAuthenticationToken inputToken = new UsernamePasswordAuthenticationToken(
                 authenticationDTO.getEmail(), authenticationDTO.getPassword());
 
         Authentication authentication = authenticationManager.authenticate(inputToken);
+
+        logger.info("Provided valid credentials.");
+
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         for(GrantedAuthority authority : userDetails.getAuthorities()){
@@ -53,6 +61,7 @@ public class AuthenticationController {
                 jwt
         );
 
+        logger.info("User is successfully authenticated.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -18,7 +18,7 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
 
     private final ParkingSpaceRepository parkingSpaceRepository;
     private final ParkingSpaceMapper spaceMapper;
-    private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParkingSpaceServiceImpl.class);
 
 
     @Autowired
