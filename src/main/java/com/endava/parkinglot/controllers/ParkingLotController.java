@@ -58,7 +58,7 @@ public class ParkingLotController {
     public ResponseEntity<ParkingLotDtoResponse> createParkingLot(
             @Valid @RequestBody ParkingLotDtoRequest parkingLotCreationDtoRequest, BindingResult bindingResult) {
 
-         parkingLotValidator.validate(parkingLotCreationDtoRequest, bindingResult);
+        parkingLotValidator.validate(parkingLotCreationDtoRequest, bindingResult);
 
         if (bindingResult.hasErrors()) {
             Map<String, String> errors = new LinkedHashMap<>();
