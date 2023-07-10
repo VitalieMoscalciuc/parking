@@ -43,7 +43,7 @@ public class ParkingLevelEntity {
     @JoinColumn(name = "lot_id")
     private ParkingLotEntity parkingLot;
 
-    @OneToMany(mappedBy = "parkingLevel", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "parkingLevel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParkingSpaceEntity> parkingSpaces;
 
     public void addSpacesToLevel(List<ParkingSpaceEntity> spaces) {

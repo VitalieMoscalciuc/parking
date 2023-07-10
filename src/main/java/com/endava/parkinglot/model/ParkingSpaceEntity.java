@@ -3,6 +3,7 @@ package com.endava.parkinglot.model;
 import com.endava.parkinglot.enums.SpaceState;
 import com.endava.parkinglot.enums.SpaceType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -52,7 +53,7 @@ public class ParkingSpaceEntity {
     @JoinColumn(name = "parking_level_id")
     private ParkingLevelEntity parkingLevel;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     private UserEntity user;
 }
