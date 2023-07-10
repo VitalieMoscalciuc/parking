@@ -2,6 +2,7 @@ package com.endava.parkinglot.mapper;
 
 import com.endava.parkinglot.DTO.parkingSpace.SpaceDTO;
 import com.endava.parkinglot.enums.SpaceState;
+import com.endava.parkinglot.enums.SpaceType;
 import com.endava.parkinglot.model.ParkingSpaceEntity;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class ParkingSpaceMapper {
 
     public SpaceDTO mapEntityToDTO(ParkingSpaceEntity entity){
         SpaceDTO space = modelMapper.map(entity, SpaceDTO.class);
-        if (space.getState() != SpaceState.TEMPORARILY_CLOSED){
+        if (space.getType() != SpaceType.TEMPORARILY_CLOSED){
             if (entity.getUser() == null) space.setState(SpaceState.AVAILABLE);
             else space.setState(SpaceState.OCCUPIED);
         }
