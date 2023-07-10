@@ -143,7 +143,8 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         ParkingLotEntity parkingLot = parkingLotRepository
                 .findById(parkingLotId)
                     .orElseThrow(() -> {
-                        logger.error("Fail to add user in Parking Lot. Parking Lot with id = " + parkingLotId + " not found!");
+                        logger.error("Fail to add user in Parking Lot. " +
+                                "Parking Lot with id = " + parkingLotId + " not found!");
                         return new ParkingLotNotFoundException(parkingLotId);
                     });
 
@@ -156,7 +157,8 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
         if(!parkingLotRepository
                 .checkIfUserExistsOnParkingLotByUserId(userId,parkingLotId)){
-            logger.error("User you try to delete from parking lot with id = " + parkingLotId + " was not originally added in this parking lot.");
+            logger.error("User you try to delete from parking lot with id = "
+                    + parkingLotId + " was not originally added in this parking lot.");
             throw new NoSuchUserOnParkingLotException(
                     "User with ID " + userId + " is not present on parking lot with ID "+parkingLotId);
         }

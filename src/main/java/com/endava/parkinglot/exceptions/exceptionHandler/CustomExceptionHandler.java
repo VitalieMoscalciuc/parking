@@ -1,5 +1,6 @@
 package com.endava.parkinglot.exceptions.exceptionHandler;
 
+import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpaceNotFoundException;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ErrorDetails;
@@ -100,6 +101,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
                 request.getDescription(false));
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FailedEmailNotificationException.class)
+    public ResponseEntity<ErrorDetails> handleCouldntSendEmailException(Exception ex,WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now()
+        ,ex.getMessage()+", please try again later!"
+                , request.getDescription(false));
+        return new ResponseEntity<>(errorDetails,HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
     }
 
     @ExceptionHandler({JWTInvalidException.class})

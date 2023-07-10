@@ -40,7 +40,8 @@ public class ParkingSpaceController {
     public ResponseEntity<HttpStatus> editParkingSpaceType(@PathVariable("id") Long spaceId, @RequestParam("type") SpaceType spaceType) {
 
         parkingSpaceService.editParkingSpaceType(spaceId, spaceType);
-
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     @PostMapping("/{parkingSpaceId}/addUser")
     public ResponseEntity<HttpStatus> addUserToParkingSpot(@PathVariable Long parkingSpaceId,
                                                            @RequestParam("userId") Long userId)
