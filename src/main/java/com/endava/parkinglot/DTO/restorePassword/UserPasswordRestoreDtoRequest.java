@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPasswordRestoreDtoRequest {
-    @NotBlank(message = "Invalid email. It should be like: 'example@email.com'")
+    @NotBlank(message = "Email cannot be empty.")
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message="Invalid email. It should be like: 'example@email.com'")
     private String email;
 }

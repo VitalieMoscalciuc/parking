@@ -1,6 +1,7 @@
 package com.endava.parkinglot.services.impl;
 
 import com.endava.parkinglot.DTO.parkingSpace.SpaceDTO;
+import com.endava.parkinglot.enums.SpaceType;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpaceNotFoundException;
 import com.endava.parkinglot.mapper.ParkingSpaceMapper;
 import com.endava.parkinglot.model.ParkingSpaceEntity;
@@ -39,6 +40,11 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
         }
 
         return spaceMapper.mapEntityListToDTOlist(spaces);
+    }
+
+    @Override
+    public void editParkingSpaceType(Long spaceId, SpaceType spaceType) {
+
     }
 
 }
