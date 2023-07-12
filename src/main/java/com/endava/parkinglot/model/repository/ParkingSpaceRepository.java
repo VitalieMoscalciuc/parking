@@ -11,5 +11,4 @@ public interface ParkingSpaceRepository extends JpaRepository<ParkingSpaceEntity
     @Query("SELECT space FROM ParkingSpaceEntity space WHERE space.parkingLevel.parkingLot.id=:lotId " +
             "AND space.parkingLevel.id=:levelId AND (LOWER(space.number) LIKE CONCAT('%', LOWER(:searchString), '%') OR :searchString IS NULL)")
     List<ParkingSpaceEntity> getAllByParkingLevelId(Long lotId, Long levelId, String searchString);
-
 }

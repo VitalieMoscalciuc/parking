@@ -33,8 +33,26 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
             ,nativeQuery = true)
     boolean checkIfUserExistsOnParkingLotByUserEmail(@Param("email") String email, @Param("parkingLotId") Long parkingLotId);
 
-
     Optional<ParkingLotEntity> findByName(String name);
 
     Optional<ParkingLotEntity> findByAddress(String address);
+
+    @Query(value = "SELECT count(*) FROM parking_space WHERE parking_level_id IN" +
+            "(SELECT id FROM parking_level WHERE lot_id = :id)" +
+            "AND type='ACCESSIBLE'", nativeQuery = true)
+    int countOfAccessibleParkingSpotsByLotId(Long id);
+
+    @Query(value = "SELECT count(*) FROM parking_space WHERE parking_level_id IN" +
+            "(SELECT id FROM parking_level WHERE lot_id = :id)" +
+            "AND type='FAMILY'", nativeQuery = true)
+    int countOfFamilyFriendlyParkingSpotsByLotId(Long id);
+
+    @Query(value = "SELECT count(*) FROM parking_space WHERE parking_level_id IN" +
+            "(SELECT id FROM parking_level WHERE lot_id = :id)" +
+            "AND user_id IS NOT NULL", nativeQuery = true)
+    int countOfOccupiedParkingSpotsByLotId(Long id);
+
+    @Query(value = "SELECT count(*) FROM parking_space WHERE parking_level_id IN" +
+            "            (SELECT id FROM parking_level WHERE lot_id = :id)", nativeQuery = true)
+    int countOfAllSpaces(Long id);
 }

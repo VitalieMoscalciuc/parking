@@ -48,9 +48,14 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
         logger.info("Found " + lots.size() + " parking lots based on your query.");
 
-        return parkingMapper
+        List<ParkingLotDtoResponse> parkingLotDtoResponses = parkingMapper
                 .mapListEntityToListResponseDto(lots);
+
+        addStatistics(parkingLotDtoResponses);
+
+        return parkingLotDtoResponses;
     }
+
 
     @Override
     public ParkingLotDtoResponse getOneParkingLot(Long id) {
@@ -62,13 +67,17 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             throw new NoSuchUserOnParkingLotException("User with email: " + email + " is not present on parking lot with ID = " + id);
         }
 
-        return parkingMapper.mapEntityToResponseDto(
+        ParkingLotDtoResponse response = parkingMapper.mapEntityToResponseDto(
                 parkingLotRepository.findById(id)
                         .orElseThrow(() -> {
                             logger.error("There is no lot with id = " + id);
                             return new ParkingLotNotFoundException(id);
                         })
         );
+
+        addStatistics(List.of(response));
+
+        return response;
     }
 
     @Override
@@ -178,6 +187,24 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         }
     }
 
+    private void addStatistics(List<ParkingLotDtoResponse> parkingLotDtoResponses) {
+        for (ParkingLotDtoResponse response : parkingLotDtoResponses){
+            int countOfAllTheSpaces = parkingLotRepository.countOfAllSpaces(response.getId());
+            int countOfOccupiedSpaces = parkingLotRepository.countOfOccupiedParkingSpotsByLotId(response.getId());
+            response.setLevelOfOccupancy(
+                    (countOfOccupiedSpaces * 100) / countOfAllTheSpaces
+            );
+
+            response.setCountOfAccessibleParkingSpots(
+                    parkingLotRepository.countOfAccessibleParkingSpotsByLotId(response.getId())
+            );
+
+            response.setCountOfFamilyFriendlyParkingSpots(
+                    parkingLotRepository.countOfFamilyFriendlyParkingSpotsByLotId(response.getId())
+            );
+        }
+    }
+
     private String getUsernameOfAuthenticatedUser(){
         UserDetails userDetails = (UserDetails) SecurityContextHolder
                 .getContext()
@@ -186,7 +213,6 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
         return userDetails.getUsername();
     }
-
 
     private List<ParkingSpaceEntity> organizeSpaces(ParkingLevelEntity levelEntity) {
         List<ParkingSpaceEntity> spaces = new ArrayList<>();

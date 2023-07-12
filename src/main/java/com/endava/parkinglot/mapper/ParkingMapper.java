@@ -8,6 +8,7 @@ import com.endava.parkinglot.enums.WorkingDays;
 import com.endava.parkinglot.model.ParkingLevelEntity;
 import com.endava.parkinglot.model.ParkingLotEntity;
 import com.endava.parkinglot.model.WorkingDaysEntity;
+import com.endava.parkinglot.model.repository.ParkingLotRepository;
 import com.endava.parkinglot.util.ModelMapperOptional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -25,7 +26,6 @@ import java.util.Set;
 public class ParkingMapper {
 
     private final ModelMapper modelMapper;
-
     private final ModelMapperOptional modelMapperOptional;
 
     public ParkingLotEntity mapRequestDtoToEntity(ParkingLotDtoRequest parkingLotDtoRequest) {
@@ -122,7 +122,7 @@ public class ParkingMapper {
 
         response.setWorkingHours(entity.getBeginWorkingHour().toString() + " - " + entity.getEndWorkingHour().toString());
 
-        response.setClosed(entity.getIsClosed());
+        response.setIsClosed(entity.getIsClosed());
 
         response.setOperatesNonStop(entity.getBeginWorkingHour().toString().contains("00:00") && entity.getEndWorkingHour().toString().contains("23:59"));
 
