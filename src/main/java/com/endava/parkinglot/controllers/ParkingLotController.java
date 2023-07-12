@@ -85,7 +85,7 @@ public class ParkingLotController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}/deleteUser")
+    @DeleteMapping("/{id}/deleteParkingLot")
     public ResponseEntity<Map<String, Object>> deleteParkingLot(@PathVariable("id") Long id) {
         parkingLotService.deleteParkingLot(id);
         return ResponseEntity.noContent().build();
