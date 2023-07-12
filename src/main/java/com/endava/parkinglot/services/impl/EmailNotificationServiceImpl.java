@@ -63,7 +63,8 @@ public class EmailNotificationServiceImpl implements EmailNotificationService {
             message.setFrom(fromAddress);
             message.setTo(email);
             message.setSubject("Parking-Lot-Application: Notification about password changing");
-            message.setText("Your password has been reset .Here is your new password: " + newPassword);
+            message.setText("Your password has been reset. \n" +
+                    "Here is your new password: " + newPassword);
             mailSender.send(message);
             logger.info("Email has been sent to: '" + email + "'");
         } catch (MailException mailException) {
