@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.endava</groupId>
 	<artifactId>parking-lot</artifactId>
-	<version>0.0.17-SNAPSHOT</version>
+	<version>0.0.18-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>parking-lot</name>
 	<description>Internal project for Spring Java Internship 2023</description>
@@ -137,21 +137,8 @@
 		</dependency>
 
 	</dependencies>
-
 	<build>
 		<plugins>
-
-<!--			<plugin>-->
-<!--				<groupId>org.flywaydb</groupId>-->
-<!--				<artifactId>flyway-maven-plugin</artifactId>-->
-<!--				<version>6.0.3</version>-->
-<!--				<configuration>-->
-<!--					<url>jdbc:postgresql://localhost:5432/postgres</url>-->
-<!--					<user>postgres</user>-->
-<!--					<password>postgres</password>-->
-<!--				</configuration>-->
-<!--			</plugin>-->
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -164,8 +151,22 @@
 					</archive>
 				</configuration>
 			</plugin>
-		</plugins>
+<!--			<plugin>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--			</plugin>-->
 
+<!--			<plugin>-->
+<!--				<groupId>org.flywaydb</groupId>-->
+<!--				<artifactId>flyway-maven-plugin</artifactId>-->
+<!--				<version>6.0.3</version>-->
+<!--				<configuration>-->
+<!--					<url>jdbc:postgresql://localhost:5432/postgres</url>-->
+<!--					<user>postgres</user>-->
+<!--					<password>postgres</password>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
+		</plugins>
 	</build>
 	<repositories>
 		<repository>
