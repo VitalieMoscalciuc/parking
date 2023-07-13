@@ -1,21 +1,23 @@
 package com.endava.parkinglot.services.impl;
 
+import com.endava.parkinglot.DTO.parkingLot.LevelDtoForLot;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
 import com.endava.parkinglot.enums.SpaceState;
 import com.endava.parkinglot.enums.SpaceType;
+import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
+import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.mapper.ParkingMapper;
-import com.endava.parkinglot.model.ParkingLevelEntity;
-import com.endava.parkinglot.model.ParkingLotEntity;
-import com.endava.parkinglot.model.ParkingSpaceEntity;
-import com.endava.parkinglot.model.UserEntity;
+import com.endava.parkinglot.model.*;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
 import com.endava.parkinglot.model.repository.UserRepository;
+import com.endava.parkinglot.model.repository.WorkingDaysRepository;
 import com.endava.parkinglot.services.ParkingLotService;
+import com.endava.parkinglot.util.ParkingLotValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,9 +25,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +41,9 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     private final ParkingMapper parkingMapper;
     private final UserRepository userRepository;
     private final EmailNotificationServiceImpl emailNotificationService;
+    private final WorkingDaysRepository workingDaysRepository;
+    private final ParkingLotValidator parkingLotValidator;
+
     private static final Logger logger = LoggerFactory.getLogger(ParkingLotServiceImpl.class);
 
     @Override
@@ -76,17 +85,34 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     public ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotCreationDtoRequest) {
         ParkingLotEntity parkingLot = parkingMapper.mapRequestDtoToEntity(parkingLotCreationDtoRequest);
 
-        for(ParkingLevelEntity levelEntity: parkingLot.getLevels()) {
-            List<ParkingSpaceEntity> spaces = organizeSpaces(levelEntity);
-            levelEntity.setParkingSpaces(spaces);
-            levelEntity.addSpacesToLevel(spaces);
-        }
+        addParkingSpacesToLevels(parkingLot);
 
         ParkingLotEntity savedParkingLot = parkingLotRepository.save(parkingLot);
 
         return parkingMapper.mapEntityToResponseDto(savedParkingLot);
     }
 
+    @Override
+    @Transactional
+    public ParkingLotDtoResponse updateParkingLot(Long id, ParkingLotDtoRequest parkingLotDtoRequest){
+        logger.info("Looking for parking lot entity with id: " + id + " to update it.");
+        ParkingLotEntity parkingLotEntity = parkingLotRepository.findById(id).orElseThrow(
+                () -> new ParkingLotNotFoundException(id)
+        );
+
+        logger.info("Trying to update parking lot entity with id: " + id + ".");
+        parkingMapper.mapTwoEntities(parkingLotEntity, parkingLotDtoRequest);
+        reformatWorkingDays(parkingLotEntity, parkingLotDtoRequest);
+        reformatLevels(parkingLotEntity, parkingLotDtoRequest);
+
+        logger.info("Reformation of entity was successful");
+
+
+        parkingLotRepository.save(parkingLotEntity);
+        logger.info("Parking Lot was updated successfully");
+
+        return parkingMapper.mapEntityToResponseDto(parkingLotEntity);
+    }
 
     @Override
     @Transactional
@@ -160,7 +186,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             logger.error("User you try to delete from parking lot with id = "
                     + parkingLotId + " was not originally added in this parking lot.");
             throw new NoSuchUserOnParkingLotException(
-                    "User with ID " + userId + " is not present on parking lot with ID "+parkingLotId);
+                    "User with ID " + userId + " is not present on parking lot with ID " + parkingLotId);
         }
 
         logger.info("Removing User with ID "+ userId + " from parking lot with ID "+ parkingLotId);
@@ -178,6 +204,23 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         }
     }
 
+    @Override
+    public void performValidationDTO(ParkingLotDtoRequest parkingLotDtoRequest, BindingResult bindingResult) {
+        parkingLotValidator.validate(parkingLotDtoRequest, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new LinkedHashMap<>();
+
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                if (!errors.containsKey(error.getField())) {
+                    errors.put(error.getField(), error.getDefaultMessage());
+                }
+            }
+
+            throw new ValidationCustomException(errors);
+        }
+    }
+
     private String getUsernameOfAuthenticatedUser(){
         UserDetails userDetails = (UserDetails) SecurityContextHolder
                 .getContext()
@@ -186,7 +229,6 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
         return userDetails.getUsername();
     }
-
 
     private List<ParkingSpaceEntity> organizeSpaces(ParkingLevelEntity levelEntity) {
         List<ParkingSpaceEntity> spaces = new ArrayList<>();
@@ -204,4 +246,120 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return spaces;
     }
 
+    private void addParkingSpacesToLevels(ParkingLotEntity parkingLotEntity) {
+        for(ParkingLevelEntity levelEntity: parkingLotEntity.getLevels()) {
+            List<ParkingSpaceEntity> spaces = organizeSpaces(levelEntity);
+            levelEntity.setParkingSpaces(spaces);
+            levelEntity.addSpacesToLevel(spaces);
+        }
+    }
+
+    private void reformatLevels(ParkingLotEntity parkingLotEntity, ParkingLotDtoRequest parkingLotDtoRequest) {
+        for (LevelDtoForLot dto : parkingLotDtoRequest.getLevels()) {
+            ParkingLevelEntity level = containsTheFloorEntity(parkingLotEntity.getLevels(), dto.getFloor());
+            int countSpacesDTO = Integer.parseInt(dto.getNumberOfSpaces());
+
+            if (level != null) {
+                if (countSpacesDTO > level.getNumberOfSpaces()) {
+                    addNewSpacesToExisting(level.getParkingSpaces(), countSpacesDTO, level);
+                }
+                else if (countSpacesDTO < level.getNumberOfSpaces()) {
+                    List<ParkingSpaceEntity> parkingSpaces = level.getParkingSpaces();
+
+                    parkingSpaces.sort((o1, o2) -> (int) (o2.getId() - o1.getId()));
+
+                    int countToRemove = parkingSpaces.size() - countSpacesDTO;
+
+                    int i = 0;
+                    while(i < countToRemove){
+                        ParkingSpaceEntity spaceEntity = parkingSpaces.get(0);
+                        if (spaceEntity.getUser() != null) {
+                            logger.error("It is not possible to decrease amount of parking spaces at the floor: '" + level.getFloor() + "', because there are occupied parking spaces!");
+                            throw new ParkingSpacesOccupiedException("You can't decrease amount of parking spaces at the floor: '" + level.getFloor() + "', because there are occupied parking spaces!");
+                        }
+                        parkingSpaces.remove(spaceEntity);
+                        i++;
+                    }
+                }
+                level.setNumberOfSpaces(countSpacesDTO);
+
+            }
+            else {
+                ParkingLevelEntity levelEntity = new ParkingLevelEntity();
+                levelEntity.setFloor(dto.getFloor());
+                levelEntity.setNumberOfSpaces(countSpacesDTO);
+                List<ParkingSpaceEntity> parkingSpaceEntities = organizeSpaces(levelEntity);
+                parkingSpaceEntities.forEach(entity -> entity.setParkingLevel(levelEntity));
+                levelEntity.setParkingSpaces(parkingSpaceEntities);
+                levelEntity.setParkingLot(parkingLotEntity);
+                parkingLotEntity.getLevels().add(levelEntity);
+            }
+        }
+
+
+        int entitySize = parkingLotEntity.getLevels().size();
+        int requestSize = parkingLotDtoRequest.getLevels().size();
+        if (entitySize > requestSize) {
+            List<ParkingLevelEntity> toDelete = new ArrayList<>();
+
+            for (ParkingLevelEntity level : parkingLotEntity.getLevels()) {
+                LevelDtoForLot levelDto = containsTheFloorDTO(parkingLotDtoRequest.getLevels(), level.getFloor());
+                if (levelDto == null) {
+                    boolean thereAreOccupiedSpaces = level.getParkingSpaces().stream()
+                            .anyMatch(space -> space.getUser() != null);
+                    if (thereAreOccupiedSpaces) {
+                        logger.error("It is not possible to delete the floor: '" + level.getFloor() + "', because there are occupied parking spaces on this floor!");
+                        throw new ParkingSpacesOccupiedException("You can't delete the floor: '" + level.getFloor() + "', because there are occupied parking spaces on this floor!");
+                    }
+                    toDelete.add(level);
+                }
+            }
+            parkingLotEntity.getLevels()
+                    .removeIf(toDelete::contains);
+        }
+
+
+    }
+
+    private List<ParkingSpaceEntity> addNewSpacesToExisting(List<ParkingSpaceEntity> parkingSpaces, int endingSize, ParkingLevelEntity parent) {
+        int initialSize = parkingSpaces.size();
+        for (int i = initialSize + 1; i <= endingSize; i++){
+            String formatter = String.format("%03d", i);
+            ParkingSpaceEntity newSpace = ParkingSpaceEntity.builder()
+                    .number(String.join("-", String.valueOf(parent.getFloor()), formatter))
+                    .type(SpaceType.REGULAR)
+                    .state(SpaceState.AVAILABLE)
+                    .parkingLevel(parent)
+                    .build();
+
+            parkingSpaces.add(newSpace);
+        }
+        return parkingSpaces;
+    }
+
+    private ParkingLevelEntity containsTheFloorEntity(List<ParkingLevelEntity> levels, Character floor) {
+        for (ParkingLevelEntity entity : levels){
+            if (entity.getFloor().equals(floor)){
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    private LevelDtoForLot containsTheFloorDTO(List<LevelDtoForLot> levels, Character floor) {
+        for (LevelDtoForLot request : levels){
+            if (request.getFloor().equals(floor)){
+                return request;
+            }
+        }
+        return null;
+    }
+
+    private void reformatWorkingDays(ParkingLotEntity parkingLotEntity, ParkingLotDtoRequest parkingLotDtoRequest) {
+        workingDaysRepository.deleteAllByParkingLotId(parkingLotEntity.getId());
+        List<WorkingDaysEntity> days = parkingMapper.stringToWorkinDayList(parkingLotDtoRequest.getWorkingDays());
+        days.forEach(day -> day.setParkingLot(parkingLotEntity));
+        workingDaysRepository.saveAll(days);
+        parkingLotEntity.setWorkingDays(days);
+    }
 }

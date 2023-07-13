@@ -46,7 +46,7 @@ public class ParkingLotEntity {
     private LocalTime endWorkingHour;
 
     @Column(name = "working_days", nullable = false)
-    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.ALL , orphanRemoval = true )
+    @OneToMany(mappedBy = "parkingLot", cascade = CascadeType.PERSIST)
     private List<WorkingDaysEntity> workingDays;
 
     @Column(nullable = false)
