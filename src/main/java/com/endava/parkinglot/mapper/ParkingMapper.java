@@ -15,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -30,16 +29,7 @@ public class ParkingMapper {
 
     public ParkingLotEntity mapRequestDtoToEntity(ParkingLotDtoRequest parkingLotDtoRequest) {
         if (parkingLotDtoRequest.isOperatesNonStop()) {
-            Set<String> set = new LinkedHashSet<>();
-            set.add("SUNDAY");
-            set.add("MONDAY");
-            set.add("TUESDAY");
-            set.add("WEDNESDAY");
-            set.add("THURSDAY");
-            set.add("FRIDAY");
-            set.add("SATURDAY");
-            parkingLotDtoRequest.setWorkingDays(set);
-            parkingLotDtoRequest.setWorkingHours("00:00-23:59:59");
+            reformatIfOperatesNonStop(parkingLotDtoRequest);
         }
 
         if (parkingLotDtoRequest.getWorkingHours().equals("00:00-00:00")) {
@@ -67,21 +57,21 @@ public class ParkingMapper {
         return LocalTime.parse(workingHours[i]);
     }
 
-    private List<WorkingDaysEntity> stringToWorkinDayList(Set<String> days) {
+    public List<WorkingDaysEntity> stringToWorkinDayList(Set<String> days) {
         List<WorkingDaysEntity> workingDays = new ArrayList<>();
 
-        for(String day: days) {
+        for (String day : days) {
             WorkingDaysEntity weekDay = new WorkingDaysEntity();
-           switch (day) {
-               case "SUNDAY" -> weekDay.setNameOfDay(WorkingDays.SUNDAY);
-               case "MONDAY" -> weekDay.setNameOfDay(WorkingDays.MONDAY);
-               case "TUESDAY"-> weekDay.setNameOfDay(WorkingDays.TUESDAY);
-               case "WEDNESDAY" -> weekDay.setNameOfDay(WorkingDays.WEDNESDAY);
-               case "THURSDAY" -> weekDay.setNameOfDay(WorkingDays.THURSDAY);
-               case "FRIDAY" -> weekDay.setNameOfDay(WorkingDays.FRIDAY);
-               case "SATURDAY" -> weekDay.setNameOfDay(WorkingDays.SATURDAY);
-           }
-           workingDays.add(weekDay);
+            switch (day) {
+                case "SUNDAY" -> weekDay.setNameOfDay(WorkingDays.SUNDAY);
+                case "MONDAY" -> weekDay.setNameOfDay(WorkingDays.MONDAY);
+                case "TUESDAY" -> weekDay.setNameOfDay(WorkingDays.TUESDAY);
+                case "WEDNESDAY" -> weekDay.setNameOfDay(WorkingDays.WEDNESDAY);
+                case "THURSDAY" -> weekDay.setNameOfDay(WorkingDays.THURSDAY);
+                case "FRIDAY" -> weekDay.setNameOfDay(WorkingDays.FRIDAY);
+                case "SATURDAY" -> weekDay.setNameOfDay(WorkingDays.SATURDAY);
+            }
+            workingDays.add(weekDay);
         }
         return workingDays;
     }
@@ -89,7 +79,7 @@ public class ParkingMapper {
     private List<ParkingLevelEntity> toLevelEntityList(List<LevelDtoForLot> levels) {
         List<ParkingLevelEntity> levelsEntity = new ArrayList<>();
 
-        for (LevelDtoForLot level: levels) {
+        for (LevelDtoForLot level : levels) {
             ParkingLevelEntity levelEntity = new ParkingLevelEntity();
             levelEntity.setFloor(level.getFloor());
             levelEntity.setNumberOfSpaces(Integer.parseInt(level.getNumberOfSpaces()));
@@ -105,15 +95,15 @@ public class ParkingMapper {
         response.setAddress(entity.getAddress());
 
         List<WorkingDays> days = new ArrayList<>();
-        for (WorkingDaysEntity workingDaysEntity : entity.getWorkingDays()){
+        for (WorkingDaysEntity workingDaysEntity : entity.getWorkingDays()) {
             days.add(workingDaysEntity.getNameOfDay());
         }
         response.setWorkingDays(days);
 
         List<LevelDTO> levels = new ArrayList<>();
-        for (ParkingLevelEntity levelEntity : entity.getLevels()){
+        for (ParkingLevelEntity levelEntity : entity.getLevels()) {
             LevelDTO levelDtoForLot = new LevelDTO();
-            levelDtoForLot.setId(entity.getId());
+            levelDtoForLot.setId(levelEntity.getId());
             levelDtoForLot.setFloor(levelEntity.getFloor());
             levelDtoForLot.setNumberOfSpaces(levelEntity.getNumberOfSpaces());
             levels.add(levelDtoForLot);
@@ -131,7 +121,7 @@ public class ParkingMapper {
 
     public List<ParkingLotDtoResponse> mapListEntityToListResponseDto(List<ParkingLotEntity> parkingLot) {
         List<ParkingLotDtoResponse> responseList = new ArrayList<>();
-        for (ParkingLotEntity entity : parkingLot){
+        for (ParkingLotEntity entity : parkingLot) {
             responseList.add(
                     mapEntityToResponseDto(entity)
             );
@@ -145,5 +135,34 @@ public class ParkingMapper {
 
     public List<ParkingLevelEntity> mapToLevelEntityList(List<LevelDtoForLot> levelsDto) {
         return modelMapperOptional.mapList(levelsDto, ParkingLevelEntity.class);
+    }
+
+    public void mapTwoEntities(ParkingLotEntity parkingLotEntity, ParkingLotDtoRequest parkingLotDtoRequest) {
+        if (parkingLotDtoRequest.isOperatesNonStop()) {
+            reformatIfOperatesNonStop(parkingLotDtoRequest);
+        }
+
+        if (parkingLotDtoRequest.getWorkingHours().equals("00:00-00:00")) {
+            parkingLotDtoRequest.setWorkingHours("00:00-23:59:59");
+        }
+
+        parkingLotEntity.setName(parkingLotDtoRequest.getName());
+        parkingLotEntity.setAddress(parkingLotDtoRequest.getAddress());
+        parkingLotEntity.setBeginWorkingHour(stringToTime(parkingLotDtoRequest.getWorkingHours(), 0));
+        parkingLotEntity.setEndWorkingHour(stringToTime(parkingLotDtoRequest.getWorkingHours(), 1));
+        parkingLotEntity.setIsClosed(parkingLotDtoRequest.isClosed());
+    }
+
+    private void reformatIfOperatesNonStop(ParkingLotDtoRequest parkingLotDtoRequest){
+        Set<String> set = new LinkedHashSet<>();
+        set.add("SUNDAY");
+        set.add("MONDAY");
+        set.add("TUESDAY");
+        set.add("WEDNESDAY");
+        set.add("THURSDAY");
+        set.add("FRIDAY");
+        set.add("SATURDAY");
+        parkingLotDtoRequest.setWorkingDays(set);
+        parkingLotDtoRequest.setWorkingHours("00:00-23:59:59");
     }
 }

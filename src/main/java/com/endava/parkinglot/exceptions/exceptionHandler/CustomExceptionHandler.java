@@ -1,6 +1,7 @@
 package com.endava.parkinglot.exceptions.exceptionHandler;
 
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
+import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpaceNotFoundException;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.ErrorDetails;
@@ -72,6 +73,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.valueOf(400));
     }
 
+    @ExceptionHandler({ParkingSpacesOccupiedException.class})
+    public ResponseEntity<ErrorDetails> handleParkingSpaceOccupiedException(Exception ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.valueOf(400));
+    }
+
     @ExceptionHandler({UserNotGrantedToDoActionException.class})
     public ResponseEntity<ErrorDetails> handleUserNotGrantedToDoActionException(Exception ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
@@ -120,6 +129,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
 //    @ExceptionHandler({Exception.class})
 //    public ResponseEntity<ErrorDetails> handleAllExceptions(Exception ex, WebRequest request) {
 //        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),

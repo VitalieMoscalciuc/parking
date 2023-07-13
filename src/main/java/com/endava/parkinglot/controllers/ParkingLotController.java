@@ -2,16 +2,13 @@ package com.endava.parkinglot.controllers;
 
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
-import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.services.ParkingLotService;
-import com.endava.parkinglot.util.ParkingLotValidator;
 import jakarta.validation.Valid;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @RestController
@@ -31,12 +27,10 @@ import java.util.List;
 public class ParkingLotController {
 
     private final ParkingLotService parkingLotService;
-    private final ParkingLotValidator parkingLotValidator;
 
     @Autowired
-    public ParkingLotController(ParkingLotService parkingLotService, ParkingLotValidator parkingLotValidator) {
+    public ParkingLotController(ParkingLotService parkingLotService) {
         this.parkingLotService = parkingLotService;
-        this.parkingLotValidator = parkingLotValidator;
     }
 
     @GetMapping("/get")
@@ -56,26 +50,27 @@ public class ParkingLotController {
 
     @PostMapping("/create")
     public ResponseEntity<ParkingLotDtoResponse> createParkingLot(
-            @Valid @RequestBody ParkingLotDtoRequest parkingLotCreationDtoRequest, BindingResult bindingResult) {
+            @Valid @RequestBody ParkingLotDtoRequest parkingLotCreationDtoRequest,
+            BindingResult bindingResult) {
 
-        parkingLotValidator.validate(parkingLotCreationDtoRequest, bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new LinkedHashMap<>();
-
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                if (!errors.containsKey(error.getField())) {
-                    errors.put(error.getField(), error.getDefaultMessage());
-                }
-            }
-
-            throw new ValidationCustomException(errors);
-        }
+        parkingLotService.performValidationDTO(parkingLotCreationDtoRequest, bindingResult);
 
         ParkingLotDtoResponse newParkingLot
                 = parkingLotService.createParkingLot(parkingLotCreationDtoRequest);
 
         return new ResponseEntity<>(newParkingLot, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ParkingLotDtoResponse> editParkingLot(@PathVariable Long id,
+                                                                @Valid @RequestBody ParkingLotDtoRequest parkingLotDtoRequest,
+                                                                BindingResult bindingResult){
+        parkingLotService.performValidationDTO(parkingLotDtoRequest, bindingResult);
+
+        ParkingLotDtoResponse editedParkingLot =
+                parkingLotService.updateParkingLot(id, parkingLotDtoRequest);
+
+        return new ResponseEntity<>(editedParkingLot, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/addUser")
