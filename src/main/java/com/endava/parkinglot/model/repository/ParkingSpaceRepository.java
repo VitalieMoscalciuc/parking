@@ -17,5 +17,4 @@ public interface ParkingSpaceRepository extends JpaRepository<ParkingSpaceEntity
     @Modifying
     @Query(value = "DELETE FROM parking_space WHERE id=:id", nativeQuery = true)
     void deleteById(@NotNull Long id);
-
 }

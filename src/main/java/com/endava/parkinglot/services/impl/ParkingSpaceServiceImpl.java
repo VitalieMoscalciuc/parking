@@ -46,5 +46,4 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
     public void editParkingSpaceType(Long spaceId, SpaceType spaceType) {
 
     }
-
 }
