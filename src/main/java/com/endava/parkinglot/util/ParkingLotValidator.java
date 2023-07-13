@@ -29,7 +29,12 @@ public class ParkingLotValidator implements Validator {
     public void validate(Object target, Errors errors) {
         ParkingLotDtoRequest dtoRequest = (ParkingLotDtoRequest) target;
 
-        if (dtoRequest.getWorkingDays() != null) {
+        Set<String> workingDays = dtoRequest.getWorkingDays();
+
+        if (workingDays != null) {
+            if (workingDays.size() == 0 && !dtoRequest.isOperatesNonStop()){
+                errors.rejectValue("workingDays", "", "At least one day of the week must be selected");
+            }
             for (String day : dtoRequest.getWorkingDays()) {
                 if (!validateTheDay(day)) {
                     errors.rejectValue("workingDays", "", "day you noticed: '" + day + "' is invalid !");

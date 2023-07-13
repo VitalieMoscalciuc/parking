@@ -34,7 +34,6 @@ public class ParkingLotDtoRequest {
     private String workingHours;
 
     @NotNull(message = "At least one day of the week must be selected")
-    @Size(min = 1, message = "At least one day of the week must be selected")
     private Set<String> workingDays;
 
     private boolean isClosed;
