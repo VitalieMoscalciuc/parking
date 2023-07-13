@@ -39,7 +39,7 @@ public class ParkingLevelEntity {
     @Column(name = "number_of_spaces", nullable = false)
     private Integer numberOfSpaces;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "lot_id")
     private ParkingLotEntity parkingLot;
 

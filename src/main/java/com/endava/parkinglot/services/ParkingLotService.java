@@ -2,14 +2,17 @@ package com.endava.parkinglot.services;
 
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
+import org.springframework.validation.BindingResult;
 
 import java.util.List;
 
 public interface ParkingLotService {
     ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotDtoRequest);
+    ParkingLotDtoResponse updateParkingLot(Long id, ParkingLotDtoRequest parkingLotDtoRequest);
     List<ParkingLotDtoResponse> getAllParkingLot(String name);
     ParkingLotDtoResponse getOneParkingLot(Long id);
     void addUser(Long id, Long userId);
     void deleteUserFromParkingLot(Long userId, Long parkingLotId);
     void deleteParkingLot(Long id);
+    void performValidationDTO(ParkingLotDtoRequest parkingLotCreationDtoRequest, BindingResult bindingResult);
 }
