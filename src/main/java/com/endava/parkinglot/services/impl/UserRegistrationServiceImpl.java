@@ -5,6 +5,7 @@ import com.endava.parkinglot.DTO.register.UserRegistrationDtoResponse;
 import com.endava.parkinglot.DTO.restorePassword.UserPasswordRestoreDtoResponse;
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
+import com.endava.parkinglot.exceptions.validation.TooManyRequestsException;
 import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.mapper.UserMapper;
 import com.endava.parkinglot.enums.Role;
@@ -13,6 +14,9 @@ import com.endava.parkinglot.model.repository.UserRepository;
 import com.endava.parkinglot.services.EmailNotificationService;
 import com.endava.parkinglot.services.UserRegistrationService;
 import com.endava.parkinglot.util.PasswordGenerator;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
 import jakarta.transaction.Transactional;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.slf4j.Logger;
@@ -20,9 +24,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static io.github.bucket4j.Bucket.builder;
 
 @Service
 public class UserRegistrationServiceImpl implements UserRegistrationService {
@@ -32,6 +39,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final Map<String, Bucket> rateLimitMap;
 
     private final PasswordGenerator passwordGenerator;
 
@@ -46,25 +55,51 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         this.passwordEncoder = passwordEncoder;
         this.emailNotificationService = emailNotificationService;
         this.passwordGenerator = passwordGenerator;
+        this.rateLimitMap = new ConcurrentHashMap<>();
     }
 
     @Override
     @Transactional(rollbackOn = FailedEmailNotificationException.class)
-    public UserPasswordRestoreDtoResponse changeUserPasswordAndSendEmail(String email) {
-        userRepository.findByEmail(email)
-                .orElseThrow(() -> {
-                    logger.error("User with email " + email + " not found in system.");
-                    return new UserNotFoundException("User with email " + email + " not found in system.");
-                });
+    public UserPasswordRestoreDtoResponse changeUserPasswordAndSendEmail(String email,String remoteAddr) {
         var response = new UserPasswordRestoreDtoResponse();
-        var newPassword = passwordGenerator.generateRandomPassword();
-        var encryptedPassword = passwordEncoder.encode(newPassword);
-        logger.info("Updating user password...");
-        userRepository.updateUserEntityByPassword(encryptedPassword, email);
-        emailNotificationService.sendNewPassword(email,newPassword);
-        response.setMessage("Your password was updated successfully, new password was sent to your email");
-        logger.info("Password was successfully changed.");
-        return response;
+        if (isRateLimitExceededByIP(remoteAddr) || isRateLimitExceededByEmail(email)) {
+            logger.error("Too many request for changing password");
+            throw new TooManyRequestsException();
+        }
+
+        if(userRepository.findByEmail(email).isEmpty()){
+            response.setMessage("If your email is valid, your password will be sent to  your email");
+            return response;
+        }
+
+            var newPassword = passwordGenerator.generateRandomPassword();
+            var encryptedPassword = passwordEncoder.encode(newPassword);
+
+            logger.info("Updating user password...");
+
+            userRepository.updateUserEntityByPassword(encryptedPassword, email);
+            emailNotificationService.sendNewPassword(email, newPassword);
+
+            response.setMessage("If your email is valid, your password will be sent to  your email");
+
+            logger.info("Password was successfully changed.");
+
+            return response;
+    }
+
+    private boolean isRateLimitExceededByEmail(String email) {
+        Bucket userRateLimit = rateLimitMap.computeIfAbsent(email, key -> createRateLimitBucket());
+        return !userRateLimit.tryConsume(1);
+    }
+
+    private boolean isRateLimitExceededByIP(String ipAddress) {
+        Bucket userRateLimit = rateLimitMap.computeIfAbsent(ipAddress, key -> createRateLimitBucket());
+        return !userRateLimit.tryConsume(1);
+    }
+
+    private static Bucket createRateLimitBucket() {
+        Bandwidth limit = Bandwidth.classic(3, Refill.greedy(3, Duration.ofHours(1)));
+        return builder().addLimit(limit).build();
     }
 
     @Override

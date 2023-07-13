@@ -30,10 +30,11 @@ public class UserRegistrationServiceImplTestIt {
     @Test
     public void shouldGenerateNewPassword() {
         String email = "john23@gmail.com";
+        String userIp = "192.168.1.1";
         UserPasswordRestoreDtoResponse expectedResponse = UserPasswordRestoreDtoResponse.builder()
-                .message("Your password was updated successfully, new password was sent to your email")
+                .message("If your email is valid, your password will be sent to  your email")
                 .build();
-        UserPasswordRestoreDtoResponse response = userRegistrationService.changeUserPasswordAndSendEmail(email);
+        UserPasswordRestoreDtoResponse response = userRegistrationService.changeUserPasswordAndSendEmail(email,userIp);
         assertEquals(expectedResponse.getMessage(), response.getMessage());
     }
 }

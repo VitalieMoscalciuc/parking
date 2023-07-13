@@ -46,8 +46,8 @@ public class RestorePasswordControllerIt {
                                 """)
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Your password was updated successfully," +
-                        " new password was sent to your email"));
+                .andExpect(jsonPath("$.message").value("If your email is valid, your password " +
+                        "will be sent to  your email"));
     }
 
     @Test
@@ -61,9 +61,8 @@ public class RestorePasswordControllerIt {
                                 }
                                 """)
                 )
-                .andExpect(status().isBadRequest())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UserNotFoundException))
-                .andExpect(result -> assertEquals("User with email " + "unexistent_user@gmail.com" + " not found in system.",
-                        result.getResolvedException().getMessage()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("If your email is valid, your password " +
+                        "will be sent to  your email"));
     }
 }
