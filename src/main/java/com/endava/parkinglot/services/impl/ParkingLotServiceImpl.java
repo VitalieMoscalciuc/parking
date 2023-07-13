@@ -9,6 +9,7 @@ import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedExceptio
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
+import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.mapper.ParkingMapper;
@@ -167,6 +168,9 @@ public class ParkingLotServiceImpl implements ParkingLotService {
             logger.error("There is no parking lot with id = " + id);
             throw new ParkingLotNotFoundException(id);
         }
+
+        if (parkingLotRepository.countOfOccupiedParkingSpotsByLotId(id) != 0)
+            throw new ParkingSpacesOccupiedException("You can't delete this parking lot because there are occupied parking spots there.");
 
         parkingLotRepository.deleteById(id);
         logger.info("Parking lot with id = " + id + " was successfully deleted.");
