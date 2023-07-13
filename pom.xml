@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.endava</groupId>
-	<artifactId>parking-log</artifactId>
-	<version>0.0.16-SNAPSHOT</version>
+	<artifactId>parking-lot</artifactId>
+	<version>0.0.17-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>parking-log</name>
+	<name>parking-lot</name>
 	<description>Internal project for Spring Java Internship 2023</description>
 	<properties>
 		<java.version>17</java.version>
