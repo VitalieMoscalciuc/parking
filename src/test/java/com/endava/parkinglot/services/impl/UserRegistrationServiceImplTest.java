@@ -189,6 +189,7 @@ class UserRegistrationServiceImplTest {
 
     @Test
     void generateNewPassword_WhenUserExists_ShouldUpdatePasswordAndSendEmail() throws FailedEmailNotificationException {
+        String userIp = "192.168.1.1";
         String email = "john23@gmail.com";
         String newPassword = "newPassword";
         String encryptedPassword = "encryptedPassword";
@@ -197,7 +198,7 @@ class UserRegistrationServiceImplTest {
                 .build();
 
         UserPasswordRestoreDtoResponse expectedResponse = UserPasswordRestoreDtoResponse.builder()
-                .message("Your password was updated successfully, new password was sent to your email")
+                .message("If your email is valid, your password will be sent to  your email")
                 .build();
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
@@ -206,7 +207,7 @@ class UserRegistrationServiceImplTest {
 
         ArgumentCaptor<String> passwordCaptor = ArgumentCaptor.forClass(String.class);
 
-        UserPasswordRestoreDtoResponse response = userRegistrationService.changeUserPasswordAndSendEmail(email);
+        UserPasswordRestoreDtoResponse response = userRegistrationService.changeUserPasswordAndSendEmail(email,userIp);
 
         verify(userRepository).findByEmail(email);
         verify(passwordGenerator).generateRandomPassword();
@@ -220,12 +221,19 @@ class UserRegistrationServiceImplTest {
 
 
     @Test
-    void generateNewPassword_WhenUserDoesNotExist_ShouldThrowUserNotFoundException() {
+    void generateNewPassword_WhenUserDoesNotExist_ShouldShowMessage() {
+        UserPasswordRestoreDtoResponse expectedResponse = UserPasswordRestoreDtoResponse.builder()
+                .message("If your email is valid, your password will be sent to  your email")
+                .build();
+
         String email = "nonexistent@gmail.com";
+        String userIp = "192.168.1.1";
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> userRegistrationService.changeUserPasswordAndSendEmail(email));
+        UserPasswordRestoreDtoResponse response = userRegistrationService.changeUserPasswordAndSendEmail(email,userIp);
+
+        assertEquals(expectedResponse.getMessage(), response.getMessage());
 
         verify(userRepository).findByEmail(email);
         verifyNoMoreInteractions(userRepository, passwordGenerator, passwordEncoder, emailNotificationService);
@@ -234,6 +242,7 @@ class UserRegistrationServiceImplTest {
     @Test
     void generateNewPassword_WhenEmailNotificationFails_ShouldSetErrorMessageAndLogWarning() throws FailedEmailNotificationException {
         String email = "john23@gmail.com";
+        String userIp = "192.168.1.1";
         String newPassword = "newPassword";
         String encryptedPassword = "encryptedPassword";
         UserEntity user = UserEntity.builder()
@@ -250,7 +259,7 @@ class UserRegistrationServiceImplTest {
         doThrow(emailException).when(emailNotificationService).sendNewPassword(eq(email), eq(newPassword));
 
         assertThrows(FailedEmailNotificationException.class, () -> {
-            userRegistrationService.changeUserPasswordAndSendEmail(email);
+            userRegistrationService.changeUserPasswordAndSendEmail(email,userIp);
         });
 
         verify(userRepository).findByEmail(email);

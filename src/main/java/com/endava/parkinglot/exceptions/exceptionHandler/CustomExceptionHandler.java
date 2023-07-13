@@ -10,6 +10,7 @@ import com.endava.parkinglot.exceptions.jwt.JWTInvalidException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
+import com.endava.parkinglot.exceptions.validation.TooManyRequestsException;
 import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,8 +58,16 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({TooManyRequestsException.class})
+    public ResponseEntity<ErrorDetails> handleTooManyRequests(TooManyRequestsException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), ex.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
     @ExceptionHandler({BadCredentialsException.class})
-    public ResponseEntity<ErrorDetails> handleBadCredentialsException(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorDetails> handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
         ErrorDetails errorDetails = new ErrorDetails(LocalDate.now(), "Incorrect email address or password",
                 request.getDescription(false));
 

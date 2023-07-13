@@ -3,6 +3,7 @@ package com.endava.parkinglot.controllers;
 import com.endava.parkinglot.DTO.restorePassword.UserPasswordRestoreDtoRequest;
 import com.endava.parkinglot.DTO.restorePassword.UserPasswordRestoreDtoResponse;
 import com.endava.parkinglot.services.UserRegistrationService;
+import jakarta.servlet.ServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,11 @@ public class RestorePasswordController {
 
     @PostMapping
     public ResponseEntity<UserPasswordRestoreDtoResponse> restore(
-            @Valid @RequestBody UserPasswordRestoreDtoRequest userPasswordRestoreDtoRequest) {
+            @Valid @RequestBody UserPasswordRestoreDtoRequest userPasswordRestoreDtoRequest,
+            ServletRequest request) {
         UserPasswordRestoreDtoResponse response =
-                userRegistrationService.changeUserPasswordAndSendEmail(userPasswordRestoreDtoRequest.getEmail());
+                userRegistrationService.changeUserPasswordAndSendEmail(userPasswordRestoreDtoRequest.getEmail()
+                        ,request.getRemoteAddr());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

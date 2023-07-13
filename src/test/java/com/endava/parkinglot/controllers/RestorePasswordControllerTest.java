@@ -5,6 +5,7 @@ import com.endava.parkinglot.DTO.restorePassword.UserPasswordRestoreDtoResponse;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.services.UserRegistrationService;
 import com.endava.parkinglot.util.PasswordGenerator;
+import jakarta.servlet.ServletRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +30,9 @@ public class RestorePasswordControllerTest {
     @Mock
     private PasswordGenerator passwordGenerator;
 
+    @Mock
+    private ServletRequest request;
+
     @InjectMocks
     private RestorePasswordController restorePasswordController;
 
@@ -36,25 +40,28 @@ public class RestorePasswordControllerTest {
     void restore_ShouldGenerateNewPasswordAndReturnResponse() {
         UserPasswordRestoreDtoRequest requestDto = new UserPasswordRestoreDtoRequest();
         requestDto.setEmail("john23@gmail.com");
+        String userIp = "192.168.1.1";
 
         UserPasswordRestoreDtoResponse expectedResponse = new UserPasswordRestoreDtoResponse();
         expectedResponse.setMessage("Your password was updated successfully, new password was sent to your email");
 
-        when(userRegistrationService.changeUserPasswordAndSendEmail("john23@gmail.com")).thenReturn(expectedResponse);
+        when(userRegistrationService.changeUserPasswordAndSendEmail("john23@gmail.com",userIp))
+                .thenReturn(expectedResponse);
 
-        ResponseEntity<UserPasswordRestoreDtoResponse> responseEntity = restorePasswordController.restore(requestDto);
+        ResponseEntity<UserPasswordRestoreDtoResponse> responseEntity = restorePasswordController
+                .restore(requestDto,request);
 
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse, responseEntity.getBody());
-        verify(userRegistrationService).changeUserPasswordAndSendEmail(requestDto.getEmail());
+        verify(userRegistrationService).changeUserPasswordAndSendEmail(requestDto.getEmail(),userIp);
     }
 
     @Test
     void restore_ShouldThrowUserNotFoundException() {
         UserPasswordRestoreDtoRequest requestDto = new UserPasswordRestoreDtoRequest();
         requestDto.setEmail("nonexistent@gmail.com");
-        when(userRegistrationService.changeUserPasswordAndSendEmail(any())).thenThrow(new UserNotFoundException("User with email " + requestDto.getEmail() + " not found in system."));
-        Throwable exception = assertThrows(UserNotFoundException.class, () -> restorePasswordController.restore(requestDto));
+        when(userRegistrationService.changeUserPasswordAndSendEmail(any(),any())).thenThrow(new UserNotFoundException("User with email " + requestDto.getEmail() + " not found in system."));
+        Throwable exception = assertThrows(UserNotFoundException.class, () -> restorePasswordController.restore(requestDto,request));
         assertEquals("User with email nonexistent@gmail.com not found in system.", exception.getMessage());
     }
 
@@ -66,9 +73,9 @@ public class RestorePasswordControllerTest {
         UserPasswordRestoreDtoResponse expectedResponse = new UserPasswordRestoreDtoResponse();
         expectedResponse.setMessage("Invalid email. It should be like: 'example@email.com'");
 
-        when(userRegistrationService.changeUserPasswordAndSendEmail(any())).thenReturn(expectedResponse);
+        when(userRegistrationService.changeUserPasswordAndSendEmail(any(),any())).thenReturn(expectedResponse);
 
-        ResponseEntity<UserPasswordRestoreDtoResponse> responseEntity = restorePasswordController.restore(requestDto);
+        ResponseEntity<UserPasswordRestoreDtoResponse> responseEntity = restorePasswordController.restore(requestDto,request);
 
         assertEquals(expectedResponse, responseEntity.getBody());
         verifyNoInteractions(passwordGenerator);
