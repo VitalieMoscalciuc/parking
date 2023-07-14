@@ -1,6 +1,7 @@
 package com.endava.parkinglot.model.repository;
 
 import com.endava.parkinglot.model.ParkingLotEntity;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Long> {
+
+    @Query("SELECT lot FROM ParkingLotEntity lot WHERE lot.name=:name AND lot.id <> :id")
+    Optional<ParkingLotEntity> findByNameExceptSelf(String name, Long id);
+
+    @Query("SELECT lot FROM ParkingLotEntity lot WHERE lot.address=:address AND lot.id <> :id")
+    Optional<ParkingLotEntity> findByAddressExceptSelf(String address, Long id);
 
     @Query("SELECT lot FROM ParkingLotEntity lot " +
             "JOIN lot.users user WHERE user.email=:userEmail " +

@@ -6,7 +6,7 @@ import com.endava.parkinglot.DTO.auth.AuthAndRegistrationResponseDTO;
 import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.security.JWTUtil;
 import com.endava.parkinglot.services.UserRegistrationService;
-import com.endava.parkinglot.util.UserValidator;
+import com.endava.parkinglot.validators.UserValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

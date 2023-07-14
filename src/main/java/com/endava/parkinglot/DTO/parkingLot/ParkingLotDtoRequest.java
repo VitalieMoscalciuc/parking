@@ -36,7 +36,7 @@ public class ParkingLotDtoRequest {
     @NotNull(message = "At least one day of the week must be selected")
     private Set<String> workingDays;
 
-    private boolean isClosed;
+    private boolean closed;
 
     private boolean operatesNonStop;
 

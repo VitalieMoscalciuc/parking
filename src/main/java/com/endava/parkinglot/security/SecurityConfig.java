@@ -1,4 +1,4 @@
-package com.endava.parkinglot.util;
+package com.endava.parkinglot.security;
 
 import com.endava.parkinglot.security.filters.ExceptionHandlerFilter;
 import com.endava.parkinglot.security.filters.JWTAuthenticationFilter;

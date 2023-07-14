@@ -1,4 +1,4 @@
-package com.endava.parkinglot.util;
+package com.endava.parkinglot.validators;
 
 import com.endava.parkinglot.DTO.register.UserRegistrationDtoRequest;
 import com.endava.parkinglot.model.UserEntity;
