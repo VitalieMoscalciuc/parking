@@ -1,32 +1,21 @@
-package com.endava.parkinglot.util;
+package com.endava.parkinglot.validators;
 
 import com.endava.parkinglot.DTO.parkingLot.LevelDtoForLot;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
-import com.endava.parkinglot.model.ParkingLotEntity;
-import com.endava.parkinglot.model.repository.ParkingLotRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import org.springframework.validation.FieldError;
 
-import java.util.Optional;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
-@RequiredArgsConstructor
-@Component
-public class ParkingLotValidator implements Validator {
+public class ParkingLotGeneralValidator {
 
-    private final ParkingLotRepository parkingLotRepository;
-
-    @Override
-    public boolean supports(Class<?> clazz) {
-        return ParkingLotDtoRequest.class.equals(clazz);
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
+    static public ParkingLotDtoRequest generalValidation(Object target, Errors errors) {
         ParkingLotDtoRequest dtoRequest = (ParkingLotDtoRequest) target;
 
         Set<String> workingDays = dtoRequest.getWorkingDays();
@@ -59,23 +48,25 @@ public class ParkingLotValidator implements Validator {
             }
         }
 
-        if (dtoRequest.getName() != null) {
-            Optional<ParkingLotEntity> nameCheck = parkingLotRepository.findByName(dtoRequest.getName());
-            if (nameCheck.isPresent()) {
-                errors.rejectValue("name", "", "The parkingLot with this name is already registered in the system !");
-            }
-        }
+        return dtoRequest;
+    }
 
-        if ( dtoRequest.getAddress() != null) {
-            Optional<ParkingLotEntity> addressCheck = parkingLotRepository.findByAddress(dtoRequest.getAddress());
-            if (addressCheck.isPresent()) {
-                errors.rejectValue("address", "", "The parkingLot with this address is already registered in the system !");
+    public void bindingResultProcessing(BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new LinkedHashMap<>();
+
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                if (!errors.containsKey(error.getField())) {
+                    errors.put(error.getField(), error.getDefaultMessage());
+                }
             }
+
+            throw new ValidationCustomException(errors);
         }
     }
 
 
-    private boolean validateTheDay(String day) {
+    static private boolean validateTheDay(String day) {
         return day.equals("MONDAY") || day.equals("TUESDAY") || day.equals("WEDNESDAY") || day.equals("THURSDAY")
                 || day.equals("FRIDAY") || day.equals("SATURDAY") || day.equals("SUNDAY");
     }

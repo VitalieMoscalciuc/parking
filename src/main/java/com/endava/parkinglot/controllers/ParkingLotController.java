@@ -53,7 +53,7 @@ public class ParkingLotController {
             @Valid @RequestBody ParkingLotDtoRequest parkingLotCreationDtoRequest,
             BindingResult bindingResult) {
 
-        parkingLotService.performValidationDTO(parkingLotCreationDtoRequest, bindingResult);
+        parkingLotService.performValidationForCreation(parkingLotCreationDtoRequest, bindingResult);
 
         ParkingLotDtoResponse newParkingLot
                 = parkingLotService.createParkingLot(parkingLotCreationDtoRequest);
@@ -65,7 +65,7 @@ public class ParkingLotController {
     public ResponseEntity<ParkingLotDtoResponse> editParkingLot(@PathVariable Long id,
                                                                 @Valid @RequestBody ParkingLotDtoRequest parkingLotDtoRequest,
                                                                 BindingResult bindingResult){
-        parkingLotService.performValidationDTO(parkingLotDtoRequest, bindingResult);
+        parkingLotService.performValidationForEdit(parkingLotDtoRequest, bindingResult, id);
 
         ParkingLotDtoResponse editedParkingLot =
                 parkingLotService.updateParkingLot(id, parkingLotDtoRequest);

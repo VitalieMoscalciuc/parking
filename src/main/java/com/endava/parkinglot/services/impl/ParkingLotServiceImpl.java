@@ -5,20 +5,19 @@ import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
 import com.endava.parkinglot.enums.SpaceState;
 import com.endava.parkinglot.enums.SpaceType;
-import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.email.FailedEmailNotificationException;
 import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
-import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.mapper.ParkingMapper;
 import com.endava.parkinglot.model.*;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
 import com.endava.parkinglot.model.repository.UserRepository;
 import com.endava.parkinglot.model.repository.WorkingDaysRepository;
 import com.endava.parkinglot.services.ParkingLotService;
-import com.endava.parkinglot.util.ParkingLotValidator;
+import com.endava.parkinglot.validators.ParkingLotCreationValidator;
+import com.endava.parkinglot.validators.ParkingLotEditValidator;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,23 +26,21 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class ParkingLotServiceImpl implements ParkingLotService {
 
     private final ParkingLotRepository parkingLotRepository;
-    private final ParkingMapper parkingMapper;
     private final UserRepository userRepository;
-    private final EmailNotificationServiceImpl emailNotificationService;
     private final WorkingDaysRepository workingDaysRepository;
-    private final ParkingLotValidator parkingLotValidator;
+    private final ParkingLotCreationValidator parkingLotCreationValidator;
+    private final ParkingLotEditValidator parkingLotEditValidator;
+    private final ParkingMapper parkingMapper;
+    private final EmailNotificationServiceImpl emailNotificationService;
 
     private static final Logger logger = LoggerFactory.getLogger(ParkingLotServiceImpl.class);
 
@@ -99,7 +96,13 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
         ParkingLotEntity savedParkingLot = parkingLotRepository.save(parkingLot);
 
-        return parkingMapper.mapEntityToResponseDto(savedParkingLot);
+        ParkingLotDtoResponse response = parkingMapper.mapEntityToResponseDto(savedParkingLot);
+
+        response.setLevelOfOccupancy(0);
+        response.setCountOfAccessibleParkingSpots(0);
+        response.setCountOfFamilyFriendlyParkingSpots(0);
+
+        return response;
     }
 
     @Override
@@ -121,7 +124,11 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         parkingLotRepository.save(parkingLotEntity);
         logger.info("Parking Lot was updated successfully");
 
-        return parkingMapper.mapEntityToResponseDto(parkingLotEntity);
+        ParkingLotDtoResponse response = parkingMapper.mapEntityToResponseDto(parkingLotEntity);
+
+        addStatistics(List.of(response));
+
+        return response;
     }
 
     @Override
@@ -236,20 +243,17 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     }
 
     @Override
-    public void performValidationDTO(ParkingLotDtoRequest parkingLotDtoRequest, BindingResult bindingResult) {
-        parkingLotValidator.validate(parkingLotDtoRequest, bindingResult);
+    public void performValidationForCreation(ParkingLotDtoRequest parkingLotDtoRequest, BindingResult bindingResult) {
+        parkingLotCreationValidator.validate(parkingLotDtoRequest, bindingResult);
 
-        if (bindingResult.hasErrors()) {
-            Map<String, String> errors = new LinkedHashMap<>();
+        parkingLotCreationValidator.bindingResultProcessing(bindingResult);
+    }
 
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                if (!errors.containsKey(error.getField())) {
-                    errors.put(error.getField(), error.getDefaultMessage());
-                }
-            }
+    @Override
+    public void performValidationForEdit(ParkingLotDtoRequest parkingLotDtoRequest, BindingResult bindingResult, Long id) {
+        parkingLotEditValidator.validate(parkingLotDtoRequest, bindingResult, id);
 
-            throw new ValidationCustomException(errors);
-        }
+        parkingLotEditValidator.bindingResultProcessing(bindingResult);
     }
 
     private String getUsernameOfAuthenticatedUser(){

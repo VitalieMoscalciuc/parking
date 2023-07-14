@@ -8,8 +8,6 @@ import com.endava.parkinglot.enums.WorkingDays;
 import com.endava.parkinglot.model.ParkingLevelEntity;
 import com.endava.parkinglot.model.ParkingLotEntity;
 import com.endava.parkinglot.model.WorkingDaysEntity;
-import com.endava.parkinglot.model.repository.ParkingLotRepository;
-import com.endava.parkinglot.util.ModelMapperOptional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,6 @@ import java.util.Set;
 public class ParkingMapper {
 
     private final ModelMapper modelMapper;
-    private final ModelMapperOptional modelMapperOptional;
 
     public ParkingLotEntity mapRequestDtoToEntity(ParkingLotDtoRequest parkingLotDtoRequest) {
         if (parkingLotDtoRequest.isOperatesNonStop()) {
@@ -127,14 +124,6 @@ public class ParkingMapper {
             );
         }
         return responseList;
-    }
-
-    public List<ParkingLotEntity> mapRequestListDtoToListEntity(List<ParkingLotDtoResponse> parkingLot) {
-        return modelMapperOptional.mapList(parkingLot, ParkingLotEntity.class);
-    }
-
-    public List<ParkingLevelEntity> mapToLevelEntityList(List<LevelDtoForLot> levelsDto) {
-        return modelMapperOptional.mapList(levelsDto, ParkingLevelEntity.class);
     }
 
     public void mapTwoEntities(ParkingLotEntity parkingLotEntity, ParkingLotDtoRequest parkingLotDtoRequest) {

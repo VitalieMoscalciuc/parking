@@ -7,7 +7,7 @@ import com.endava.parkinglot.enums.Role;
 import com.endava.parkinglot.exceptions.validation.ValidationCustomException;
 import com.endava.parkinglot.security.JWTUtil;
 import com.endava.parkinglot.services.UserRegistrationService;
-import com.endava.parkinglot.util.UserValidator;
+import com.endava.parkinglot.validators.UserValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -14,5 +14,6 @@ public interface ParkingLotService {
     void addUser(Long id, Long userId);
     void deleteUserFromParkingLot(Long userId, Long parkingLotId);
     void deleteParkingLot(Long id);
-    void performValidationDTO(ParkingLotDtoRequest parkingLotCreationDtoRequest, BindingResult bindingResult);
+    void performValidationForCreation(ParkingLotDtoRequest parkingLotCreationDtoRequest, BindingResult bindingResult);
+    void performValidationForEdit(ParkingLotDtoRequest parkingLotDtoRequest, BindingResult bindingResult, Long id);
 }
