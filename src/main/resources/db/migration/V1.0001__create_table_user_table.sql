@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS "user_table" (
     name VARCHAR(30) NOT NULL,
     password VARCHAR(100) NOT NULL,
     phone_number VARCHAR(9) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(320) NOT NULL,
     enabled BOOLEAN DEFAULT true,
     role VARCHAR(8) DEFAULT 'REGULAR',
     CONSTRAINT name_length CHECK (LENGTH(name) <= 30),
