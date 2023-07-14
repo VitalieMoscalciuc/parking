@@ -149,19 +149,9 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>com.mypackage.MyClass</mainClass>
-						</manifest>
-					</archive>
+                    <mainClass>com.endava.parkinglot.ParkingLotApplication</mainClass>
 				</configuration>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.springframework.boot</groupId>-->
-<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--			</plugin>-->
-
 <!--			<plugin>-->
 <!--				<groupId>org.flywaydb</groupId>-->
 <!--				<artifactId>flyway-maven-plugin</artifactId>-->
