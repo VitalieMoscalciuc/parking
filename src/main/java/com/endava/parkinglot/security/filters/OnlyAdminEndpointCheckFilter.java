@@ -28,7 +28,8 @@ public class OnlyAdminEndpointCheckFilter extends OncePerRequestFilter {
                 Pattern.compile("^.*/api/parkingLot/[-\\d]+/deleteUser$"),
                 Pattern.compile("^.*/api/parkingLot/[-\\d]+/deleteParkingLot$"),
                 Pattern.compile("^.*/api/register/grantAdmin$"),
-                Pattern.compile("^.*/api/parkingLot/create$")
+                Pattern.compile("^.*/api/parkingLot/create$"),
+                Pattern.compile("^.*/api/parkingLot/update$")
         );
     }
 
