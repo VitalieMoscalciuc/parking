@@ -37,6 +37,8 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<AuthAndRegistrationResponseDTO> authenticate(@RequestBody @Valid AuthenticationDTO authenticationDTO){
+        authenticationDTO.setEmail(authenticationDTO.getEmail().toLowerCase());
+
         logger.info("Trying to authenticate user with username: " + authenticationDTO.getEmail());
 
         String role = "";
