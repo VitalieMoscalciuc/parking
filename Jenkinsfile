@@ -174,7 +174,7 @@ pipeline {
       echo 'post always'
     }
     success {
-      script{
+      script {
         echo "The Parking Lot 2 application has been deployed with version: ${VERSION}."
       }
     }
