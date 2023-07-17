@@ -41,6 +41,8 @@ public class RegisterController {
     @PostMapping(value = "/new")
     public ResponseEntity<AuthAndRegistrationResponseDTO> register(@RequestBody @Valid UserRegistrationDtoRequest registrationDtoRequest,
                                                                    BindingResult bindingResult) {
+        registrationDtoRequest.setEmail(registrationDtoRequest.getEmail().toLowerCase());
+
         userValidator.validate(registrationDtoRequest, bindingResult);
 
         if (bindingResult.hasErrors()) {
