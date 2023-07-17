@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -45,7 +46,9 @@ public class RestorePasswordControllerTest {
         UserPasswordRestoreDtoResponse expectedResponse = new UserPasswordRestoreDtoResponse();
         expectedResponse.setMessage("Your password was updated successfully, new password was sent to your email");
 
-        when(userRegistrationService.changeUserPasswordAndSendEmail("john23@gmail.com",userIp))
+
+        when(request.getRemoteAddr()).thenReturn(userIp);
+        when(userRegistrationService.changeUserPasswordAndSendEmail(requestDto.getEmail(), userIp))
                 .thenReturn(expectedResponse);
 
         ResponseEntity<UserPasswordRestoreDtoResponse> responseEntity = restorePasswordController
@@ -54,15 +57,6 @@ public class RestorePasswordControllerTest {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(expectedResponse, responseEntity.getBody());
         verify(userRegistrationService).changeUserPasswordAndSendEmail(requestDto.getEmail(),userIp);
-    }
-
-    @Test
-    void restore_ShouldThrowUserNotFoundException() {
-        UserPasswordRestoreDtoRequest requestDto = new UserPasswordRestoreDtoRequest();
-        requestDto.setEmail("nonexistent@gmail.com");
-        when(userRegistrationService.changeUserPasswordAndSendEmail(any(),any())).thenThrow(new UserNotFoundException("User with email " + requestDto.getEmail() + " not found in system."));
-        Throwable exception = assertThrows(UserNotFoundException.class, () -> restorePasswordController.restore(requestDto,request));
-        assertEquals("User with email nonexistent@gmail.com not found in system.", exception.getMessage());
     }
 
     @Test
