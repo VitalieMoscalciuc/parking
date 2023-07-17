@@ -29,6 +29,7 @@ import org.springframework.validation.BindingResult;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -95,6 +96,11 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         addParkingSpacesToLevels(parkingLot);
 
         ParkingLotEntity savedParkingLot = parkingLotRepository.save(parkingLot);
+
+        UserEntity user = userRepository.findByEmail(getUsernameOfAuthenticatedUser())
+                .orElseThrow(() -> new UserNotFoundException("No such username in the system!"));
+        savedParkingLot.setUsers(Set.of(user));
+        user.getParkingLots().add(savedParkingLot);
 
         ParkingLotDtoResponse response = parkingMapper.mapEntityToResponseDto(savedParkingLot);
 
