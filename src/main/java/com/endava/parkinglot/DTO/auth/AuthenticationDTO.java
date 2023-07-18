@@ -16,7 +16,7 @@ import lombok.Setter;
 public class AuthenticationDTO {
 
     @NotBlank(message = "Email cannot be empty.", groups = NotEmptyValidationGroup.class)
-    @Pattern(regexp = "(?i)^(?=.{5,320}$)[a-z0-9!#$%&'*+/=?^_`{|}~-]{1,64}@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", message="Invalid email. It should be like: 'example@email.com'.", groups = PatternValidationGroup.class)
+    @Pattern(regexp = "(?i)^(?=.{5,320}$)[a-z0-9!#$%&'*+/=?^._`{|}~-]{1,64}@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", message="Invalid email. It should be like: 'example@email.com'.", groups = PatternValidationGroup.class)
     @Size(min = 12, max = 35, message = "Size of the email should be between 12 and 35 characters.", groups = SizeValidationGroup.class)
     @Email(message = "Please enter a valid email address.", groups = EmailValidationGroup.class)
     private String email;
