@@ -18,7 +18,7 @@ public class UserRegistrationDtoRequest {
     private String name;
 
     @NotBlank(message = "Invalid email. It must follow the standard email pattern: example@gmail.com.")
-    @Pattern(regexp = "(?i)^(?=.{5,320}$)[a-z0-9!#$%&'*+/=?^_`{|}~-]{1,64}@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", message="Invalid email. It should be like: 'example@email.com'")
+    @Pattern(regexp = "(?i)^(?=.{5,320}$)[a-z0-9!#$%&'*+/=?^._`{|}~-]{1,64}@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", message="Invalid email. It should be like: 'example@email.com'")
     private String email;
 
     @NotBlank(message = "Invalid password.Must be 5-10 characters, including symbols, upper- and lower-case letters." +
