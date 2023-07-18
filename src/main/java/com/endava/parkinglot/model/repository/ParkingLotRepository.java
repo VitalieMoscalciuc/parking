@@ -40,7 +40,6 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
             ,nativeQuery = true)
     boolean checkIfUserExistsOnParkingLotByUserEmail(@Param("email") String email, @Param("parkingLotId") Long parkingLotId);
 
-
     Optional<ParkingLotEntity> findByName(String name);
 
     Optional<ParkingLotEntity> findByAddress(String address);

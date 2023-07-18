@@ -41,12 +41,12 @@ public class ParkingSpaceEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @ColumnDefault("REGULAR")
+    @ColumnDefault("'REGULAR'")
     private SpaceType type;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @ColumnDefault("AVAILABLE")
+    @ColumnDefault("'AVAILABLE'")
     private SpaceState state;
 
     @ManyToOne
