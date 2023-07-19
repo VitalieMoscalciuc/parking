@@ -21,10 +21,12 @@ import java.util.Set;
 @AllArgsConstructor
 public class ParkingLotDtoRequest {
     @NotBlank(message = "Parking name should have between 1-70 characters")
+    @Pattern(regexp = "^(?!.*[а-яА-Я]).{1,70}$", message = "Parking name does not accept Russian letters")
     @Pattern(regexp = "^(.{1,70})$", message = "Parking name should have between 1-70 characters")
     private String name;
 
     @NotBlank(message = "Parking address should have between 1-70 characters")
+    @Pattern(regexp = "^(?!.*[а-яА-Я]).{1,70}$", message = "Parking address does not accept Russian letters")
     @Pattern(regexp = "^(.{1,70})$", message = "Parking address should have between 1-70 characters")
     private String address;
 
@@ -41,6 +43,6 @@ public class ParkingLotDtoRequest {
     private boolean operatesNonStop;
 
     @NotNull(message = "Parking lot must have at least one level")
-    @Size(min = 1,max = 5,message = "Parking can have at least 1 level and up to 5 levels")
+    @Size(min = 1, max = 5, message = "Parking can have at least 1 level and up to 5 levels")
     private List<@Valid LevelDtoForLot> levels;
 }
