@@ -10,6 +10,7 @@ import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotExcepti
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
+import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.mapper.ParkingMapper;
 import com.endava.parkinglot.model.*;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
@@ -116,7 +117,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     public ParkingLotDtoResponse updateParkingLot(Long id, ParkingLotDtoRequest parkingLotDtoRequest){
         logger.info("Looking for parking lot entity with id: " + id + " to update it.");
         ParkingLotEntity parkingLotEntity = parkingLotRepository.findById(id).orElseThrow(
-                () -> new ParkingLotNotFoundException(id)
+                () -> new UserNotGrantedToDoActionException("User doesn't have authorities to do this action !")
         );
 
         logger.info("Trying to update parking lot entity with id: " + id + ".");
