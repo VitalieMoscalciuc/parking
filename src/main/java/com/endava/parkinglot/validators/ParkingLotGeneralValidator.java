@@ -35,7 +35,7 @@ public class ParkingLotGeneralValidator {
             Set<String> duplicateChecking = new HashSet<>();
             for (LevelDtoForLot levelDtoForLot : dtoRequest.getLevels()) {
                 if (levelDtoForLot.getFloor() != null) {
-                    if (!Pattern.matches("^[A-Z]$", Character.toString(levelDtoForLot.getFloor()))) {
+                    if (!Pattern.matches("^[A-Z]$", levelDtoForLot.getFloor())) {
                         errors.rejectValue("levels", "", "Level' floor can be only single alphabetical character! " +
                                 "Character you typed for floor: '" + levelDtoForLot.getFloor() + "' is invalid!");
                     }

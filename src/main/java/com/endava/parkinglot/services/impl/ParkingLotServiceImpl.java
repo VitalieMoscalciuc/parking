@@ -117,7 +117,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     public ParkingLotDtoResponse updateParkingLot(Long id, ParkingLotDtoRequest parkingLotDtoRequest){
         logger.info("Looking for parking lot entity with id: " + id + " to update it.");
         ParkingLotEntity parkingLotEntity = parkingLotRepository.findById(id).orElseThrow(
-                () -> new UserNotGrantedToDoActionException("User doesn't have authorities to do this action !")
+                () -> new ParkingLotNotFoundException(id)
         );
 
         logger.info("Trying to update parking lot entity with id: " + id + ".");
@@ -379,7 +379,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return parkingSpaces;
     }
 
-    private ParkingLevelEntity containsTheFloorEntity(List<ParkingLevelEntity> levels, Character floor) {
+    private ParkingLevelEntity containsTheFloorEntity(List<ParkingLevelEntity> levels, String floor) {
         for (ParkingLevelEntity entity : levels){
             if (entity.getFloor().equals(floor)){
                 return entity;
@@ -388,7 +388,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return null;
     }
 
-    private LevelDtoForLot containsTheFloorDTO(List<LevelDtoForLot> levels, Character floor) {
+    private LevelDtoForLot containsTheFloorDTO(List<LevelDtoForLot> levels, String floor) {
         for (LevelDtoForLot request : levels){
             if (request.getFloor().equals(floor)){
                 return request;
