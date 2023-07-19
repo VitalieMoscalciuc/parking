@@ -24,15 +24,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         }
-        catch (UserNotGrantedToDoActionException e) {
-            FilterErrorDetails errorResponse = new FilterErrorDetails(LocalDate.now().toString(), e.getMessage());
-            String jsonErrorResponse = convertObjectToJson(errorResponse);
-
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write(jsonErrorResponse);
-        }
-        catch (JWTInvalidException e) {
+        catch (UserNotGrantedToDoActionException | JWTInvalidException e) {
             FilterErrorDetails errorResponse = new FilterErrorDetails(LocalDate.now().toString(), e.getMessage());
             String jsonErrorResponse = convertObjectToJson(errorResponse);
 

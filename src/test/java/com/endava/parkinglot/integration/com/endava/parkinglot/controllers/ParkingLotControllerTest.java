@@ -124,8 +124,8 @@ class ParkingLotControllerTest {
                 () -> assertEquals(beginWorkingHour, result.get().getBeginWorkingHour()),
                 () -> assertEquals(endWorkingHour, result.get().getEndWorkingHour())
         );
-        assertEquals('A', levels.get(0).getFloor());
-        assertEquals('B', levels.get(1).getFloor());
+        assertEquals("A", levels.get(0).getFloor());
+        assertEquals("B", levels.get(1).getFloor());
         assertEquals(5, levels.get(0).getNumberOfSpaces());
         assertEquals(5, levels.get(1).getNumberOfSpaces());
 

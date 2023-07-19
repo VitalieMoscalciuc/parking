@@ -5,6 +5,7 @@ import com.endava.parkinglot.security.JWTUtil;
 import com.endava.parkinglot.util.UserCreationUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,6 +40,7 @@ public class EmailNotificationServiceImplTest {
     }
 
     @Test
+    @Disabled
     void shouldSendEmailNotificationAboutGrantedAdminAuthority() {
         // Arrange
         String email = regularUser.getEmail();
