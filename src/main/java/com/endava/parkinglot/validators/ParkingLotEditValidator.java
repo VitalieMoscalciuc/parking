@@ -19,7 +19,7 @@ public class ParkingLotEditValidator extends ParkingLotGeneralValidator {
 
     public void validate(Object target, Errors errors, Long currentId){
         parkingLotRepository.findById(currentId)
-                .orElseThrow(() -> new UserNotGrantedToDoActionException("User doesn't have authorities to do this action !"));
+                .orElseThrow(() -> new ParkingLotNotFoundException(currentId));
 
         ParkingLotDtoRequest dtoRequest = ParkingLotGeneralValidator.generalValidation(target, errors);
 

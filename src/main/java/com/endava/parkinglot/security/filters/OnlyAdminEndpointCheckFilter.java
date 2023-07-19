@@ -29,7 +29,7 @@ public class OnlyAdminEndpointCheckFilter extends OncePerRequestFilter {
                 Pattern.compile("^.*/api/parkingLot/[-\\d]+/deleteParkingLot$"),
                 Pattern.compile("^.*/api/register/grantAdmin$"),
                 Pattern.compile("^.*/api/parkingLot/create$"),
-                Pattern.compile("^.*/api/parkingLot/update$")
+                Pattern.compile("^.*/api/parkingLot/update/[-\\d]+$")
         );
     }
 

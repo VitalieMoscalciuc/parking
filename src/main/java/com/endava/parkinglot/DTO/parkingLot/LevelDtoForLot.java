@@ -16,7 +16,7 @@ import lombok.Setter;
 public class LevelDtoForLot {
 
     @NotNull(message = "Filed 'floor' is mandatory.")
-    private Character floor;
+    private String floor;
 
     @NotNull(message = "The field should accept digits only, different than zero and maxim 150 spots.")
     @Pattern(regexp = "^(?:[1-9]|[1-9][0-9]|1[0-4][0-9]|150)$",

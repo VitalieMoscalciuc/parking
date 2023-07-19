@@ -34,7 +34,7 @@ public class ParkingLevelEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Character floor;
+    private String floor;
 
     @Column(name = "number_of_spaces", nullable = false)
     private Integer numberOfSpaces;
