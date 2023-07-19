@@ -2,6 +2,7 @@ package com.endava.parkinglot.validators;
 
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
+import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.model.ParkingLotEntity;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,7 @@ public class ParkingLotEditValidator extends ParkingLotGeneralValidator {
 
     public void validate(Object target, Errors errors, Long currentId){
         parkingLotRepository.findById(currentId)
-                .orElseThrow(() -> new ParkingLotNotFoundException(currentId));
+                .orElseThrow(() -> new UserNotGrantedToDoActionException("User doesn't have authorities to do this action !"));
 
         ParkingLotDtoRequest dtoRequest = ParkingLotGeneralValidator.generalValidation(target, errors);
 
