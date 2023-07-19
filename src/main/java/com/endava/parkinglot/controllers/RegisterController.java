@@ -59,7 +59,7 @@ public class RegisterController {
 
         UserRegistrationDtoResponse created = userRegistrationService.register(registrationDtoRequest);
 
-        String token = jwtUtil.generateAccessToken(registrationDtoRequest.getEmail());
+        String token = jwtUtil.generateAccessToken(registrationDtoRequest.getEmail(), "REGULAR");
 
         AuthAndRegistrationResponseDTO response = new AuthAndRegistrationResponseDTO(
                 created.getEmail(),

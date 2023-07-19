@@ -62,7 +62,7 @@ class RegisterControllerTest {
 
         when(registrationService.register(registrationDtoRequest)).thenReturn(registrationResponse);
         String token = "TestToken1111";
-        when(jwtUtil.generateAccessToken(registrationDtoRequest.getEmail())).thenReturn(token);
+        when(jwtUtil.generateAccessToken(registrationDtoRequest.getEmail(), "REGULAR")).thenReturn(token);
 
         AuthAndRegistrationResponseDTO expectedAuthResponse = AuthAndRegistrationResponseDTO.builder()
                 .email("john23@gmail.com")
@@ -82,7 +82,7 @@ class RegisterControllerTest {
 
         verify(userValidator).validate(registrationDtoRequest, bindingResult);
         verify(registrationService).register(registrationDtoRequest);
-        verify(jwtUtil).generateAccessToken(registrationDtoRequest.getEmail());
+        verify(jwtUtil).generateAccessToken(registrationDtoRequest.getEmail(), "REGULAR");
     }
 
     @Test
