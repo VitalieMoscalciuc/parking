@@ -9,11 +9,12 @@ import java.util.List;
 public interface ParkingLotService {
     ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotDtoRequest);
     ParkingLotDtoResponse updateParkingLot(Long id, ParkingLotDtoRequest parkingLotDtoRequest);
-    List<ParkingLotDtoResponse> getAllParkingLot(String name);
+    List<ParkingLotDtoResponse> getAllParkingLots(String searchString);
     ParkingLotDtoResponse getOneParkingLot(Long id);
     void addUser(Long id, Long userId);
     void deleteUserFromParkingLot(Long userId, Long parkingLotId);
     void deleteParkingLot(Long id);
     void performValidationForCreation(ParkingLotDtoRequest parkingLotCreationDtoRequest, BindingResult bindingResult);
     void performValidationForEdit(ParkingLotDtoRequest parkingLotDtoRequest, BindingResult bindingResult, Long id);
+
 }

@@ -37,7 +37,7 @@ public class ParkingLotController {
     public ResponseEntity<List<ParkingLotDtoResponse>> getAll(
             @RequestParam(required = false) String searchString) {
         List<ParkingLotDtoResponse> parkingLots
-                = parkingLotService.getAllParkingLot(searchString);
+                = parkingLotService.getAllParkingLots(searchString);
         return new ResponseEntity<>(parkingLots, HttpStatus.OK);
     }
 
