@@ -30,6 +30,16 @@ pipeline {
     PL_PGSQL_PASSWORD=credentials('PL_PGSQL_PASSWORD')
     SONAR_PARKINGLOT_TOKEN=credentials('sonarqube-parkinglot-token')
   }
+  options {
+    office365ConnectorWebhooks([[
+      name: "Office 365",
+      notifyBackToNormal: true, 
+      notifyFailure: true,
+      notifyRepeatedFailure: true,
+      notifySuccess: true,
+      notifyAborted: true
+      ]])
+  }
 
   stages {
     stage('Set variables') {
@@ -119,7 +129,6 @@ pipeline {
           script {
             docker.withRegistry('https://nexus.tool.mddinternship.com/repository', 'nexus-jenkins') {
               dockerImage.push("${VERSION}")
-              dockerImage.push('latest')
             }
           }
         }
@@ -160,7 +169,7 @@ pipeline {
                   url: 'https://gitlab.tool.mddinternship.com/parking-lot-2/parking-lot-ii-helm-chart.git'
               withAWS(credentials: 'mrosca-aws-key', region: 'eu-central-1') {
                 sh '''
-                sed -i "s#^appVersion:.*#appVersion: ${VERSION}#" Chart.yaml
+                  sed -i "s#^appVersion:.*#appVersion: ${VERSION}#" Chart.yaml
                   sed -i "s#^  tag:.*#  tag: ${VERSION}#" values.yaml
                   cat values.yaml
                   kubectl config set-context --current --namespace=parking-lot-ii
@@ -177,15 +186,25 @@ pipeline {
 
   post {
     always {
-      echo 'post always'
+      echo "Always"
     }
     success {
       script {
         echo "The Parking Lot 2 application has been deployed with version: ${VERSION}."
       }
+      office365ConnectorSend ( webhookUrl: "${PL_WEBHOOK}",
+        message: """ 
+          The Parking Lot 2 application has been deployed with version: ${VERSION}.
+          """) 
     }
     failure {
-      echo 'post failure'
+      script {
+        echo "The deployment of Parking Lot 2 application version: ${VERSION} has failed. "
+      }
+      office365ConnectorSend ( webhookUrl: "${PL_WEBHOOK}",
+        message: """ 
+          The deployment of Parking Lot 2 application version: ${VERSION} has failed. 
+          """) 
     }
   }
 }
