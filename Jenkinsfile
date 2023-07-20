@@ -189,22 +189,17 @@ pipeline {
       echo "Always"
     }
     success {
-      script {
-        echo "The Parking Lot 2 application has been deployed with version: ${VERSION}."
-      }
-      office365ConnectorSend ( webhookUrl: "${PL_WEBHOOK}",
-        message: """ 
-          The Parking Lot 2 application has been deployed with version: ${VERSION}.
-          """) 
+      echo "The Parking Lot 2 application has been deployed with version: ${VERSION}."
+
+      office365ConnectorSend webhookUrl: "${PL_WEBHOOK}",
+        message: "The Parking Lot 2 application has been deployed with version: ${VERSION}.",
+        status: "Success"
     }
     failure {
-      script {
-        echo "The deployment of Parking Lot 2 application version: ${VERSION} has failed. "
-      }
-      office365ConnectorSend ( webhookUrl: "${PL_WEBHOOK}",
-        message: """ 
-          The deployment of Parking Lot 2 application version: ${VERSION} has failed. 
-          """) 
+      echo "The deployment of Parking Lot 2 application version: ${VERSION} has failed. "
+
+      office365ConnectorSend webhookUrl: "${PL_WEBHOOK}",
+        message: "The deployment of Parking Lot 2 application version: ${VERSION} has failed."
     }
   }
 }
