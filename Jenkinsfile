@@ -29,6 +29,7 @@ pipeline {
     PL_PGSQL_USERNAME=credentials('PL_PGSQL_USERNAME')
     PL_PGSQL_PASSWORD=credentials('PL_PGSQL_PASSWORD')
     SONAR_PARKINGLOT_TOKEN=credentials('sonarqube-parkinglot-token')
+    WEBHOOK=credentials('PL_WEBHOOK')
   }
   options {
     office365ConnectorWebhooks([[
@@ -191,14 +192,14 @@ pipeline {
     success {
       echo "The Parking Lot 2 application has been deployed with version: ${VERSION}."
 
-      office365ConnectorSend webhookUrl: "${PL_WEBHOOK}",
+      office365ConnectorSend webhookUrl: "${WEBHOOK}",
         message: "The Parking Lot 2 application has been deployed with version: ${VERSION}.",
         status: "Success"
     }
     failure {
       echo "The deployment of Parking Lot 2 application version: ${VERSION} has failed. "
 
-      office365ConnectorSend webhookUrl: "${PL_WEBHOOK}",
+      office365ConnectorSend webhookUrl: "${WEBHOOK}",
         message: "The deployment of Parking Lot 2 application version: ${VERSION} has failed."
     }
   }
