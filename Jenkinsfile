@@ -31,6 +31,7 @@ pipeline {
     SONAR_PARKINGLOT_TOKEN=credentials('sonarqube-parkinglot-token')
     WEBHOOK=credentials('PL_WEBHOOK')
   }
+
   options {
     office365ConnectorWebhooks([[
       name: "Office 365",
@@ -146,9 +147,9 @@ pipeline {
           script {
             withAWS(credentials: 'mrosca-aws-key', region: 'eu-central-1') {
               sh '''
-              aws eks update-kubeconfig --name internship-eks --region eu-central-1
-              kubectl config set-context --current --namespace=parking-lot-ii
-              kubectl get nodes 
+                aws eks update-kubeconfig --name internship-eks --region eu-central-1
+                kubectl config set-context --current --namespace=parking-lot-ii
+                kubectl get nodes 
               '''
               }     
             }
@@ -172,7 +173,6 @@ pipeline {
                 sh '''
                   sed -i "s#^appVersion:.*#appVersion: ${VERSION}#" Chart.yaml
                   sed -i "s#^  tag:.*#  tag: ${VERSION}#" values.yaml
-                  cat values.yaml
                   kubectl config set-context --current --namespace=parking-lot-ii
                   helm package .
                   helm upgrade -i --set PL_PGSQL_URL=${PL_PGSQL_URL} --set PL_PGSQL_DATABASE=${PL_PGSQL_DATABASE} --set PL_PGSQL_USERNAME=${PL_PGSQL_USERNAME} --set PL_PGSQL_PASSWORD=${PL_PGSQL_PASSWORD} parking-lot-ii parking-lot-ii-*.tgz
@@ -186,22 +186,15 @@ pipeline {
   }
 
   post {
-    always {
-      echo "Always"
-    }
     success {
-      echo "The Parking Lot 2 application has been deployed with version: ${VERSION}."
-
       office365ConnectorSend webhookUrl: "${WEBHOOK}",
         message: "The Parking Lot 2 application has been deployed with version: ${VERSION}.",
         status: "Success"
     }
     failure {
-      echo "The deployment of Parking Lot 2 application version: ${VERSION} has failed. "
-
       office365ConnectorSend webhookUrl: "${WEBHOOK}",
-        message: "The deployment of Parking Lot 2 application version: ${VERSION} has failed."
+        message: "The deployment of Parking Lot 2 application version: ${VERSION} has failed.",
+        status: "Failed"
     }
   }
 }
-
