@@ -86,7 +86,7 @@ public class ParkingLotController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{parkingLotId}/deleteUser")
+    @DeleteMapping("/{parkingLotId}/deleteUser")
     public ResponseEntity<HttpStatus> deleteUserFromParkingLot(@PathVariable Long parkingLotId
             ,@RequestParam(value = "userId") Long userId) {
         parkingLotService.deleteUserFromParkingLot(userId, parkingLotId);
