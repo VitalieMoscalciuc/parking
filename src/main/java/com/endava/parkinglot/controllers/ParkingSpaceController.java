@@ -47,7 +47,7 @@ public class ParkingSpaceController {
                                                            @RequestParam("userId") Long userId)
 
     {
-       // parkingSpaceService.addUser(parkingSpaceId,userId);
+        parkingSpaceService.addUserToParkingSpace(parkingSpaceId,userId);
        
         return new ResponseEntity<>(HttpStatus.OK);
     }
