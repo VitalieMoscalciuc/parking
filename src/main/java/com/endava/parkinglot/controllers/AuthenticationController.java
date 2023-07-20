@@ -54,7 +54,7 @@ public class AuthenticationController {
             role = authority.getAuthority().substring(5);
         }
 
-        String jwt = jwtUtil.generateAccessToken(authenticationDTO.getEmail());
+        String jwt = jwtUtil.generateAccessToken(authenticationDTO.getEmail(), role);
 
         AuthAndRegistrationResponseDTO response = new AuthAndRegistrationResponseDTO(
                 userDetails.getUsername(),

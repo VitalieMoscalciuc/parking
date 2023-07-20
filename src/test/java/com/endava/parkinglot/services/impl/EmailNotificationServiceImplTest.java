@@ -46,7 +46,7 @@ public class EmailNotificationServiceImplTest {
         String email = regularUser.getEmail();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(jwtUtil.generateAccessToken(adminUser.getEmail()));
+        headers.setBearerAuth(jwtUtil.generateAccessToken(adminUser.getEmail(), "ADMIN"));
         HttpEntity<String> emailRequest = new HttpEntity<>(email, headers);
 
         // Act

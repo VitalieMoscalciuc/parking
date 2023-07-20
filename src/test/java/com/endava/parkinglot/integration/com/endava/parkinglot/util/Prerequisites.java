@@ -54,12 +54,13 @@ public class Prerequisites {
         return userRepository.save(user);
     }
 
-    public String generateAccessToken(String username){
-        Date expirationDate = Date.from(ZonedDateTime.now().plusYears(5).toInstant());
+    public String generateAccessToken(String username, String role){
+        Date expirationDate = Date.from(ZonedDateTime.now().plusHours(24).toInstant());
 
         return JWT.create()
                 .withSubject("User details")
                 .withClaim("username", username)
+                .withClaim("role", role)
                 .withIssuedAt(new Date())
                 .withIssuer("PARKING_LOT")
                 .withExpiresAt(expirationDate)

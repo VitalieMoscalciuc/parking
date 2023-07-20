@@ -62,7 +62,7 @@ class ParkingLotControllerTest {
     void init() {
         prerequisites.clear();
         UserEntity userAdmin = prerequisites.createUserAdmin();
-        adminToken = prerequisites.generateAccessToken(userAdmin.getEmail());
+        adminToken = prerequisites.generateAccessToken(userAdmin.getEmail(), "ADMIN");
         headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + adminToken);
     }
