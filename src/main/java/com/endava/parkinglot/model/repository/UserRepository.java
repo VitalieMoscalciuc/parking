@@ -16,6 +16,13 @@ public interface UserRepository extends JpaRepository <UserEntity, Long> {
 
     Optional<UserEntity> findByPhone(String phone);
 
+    @Query("SELECT EXISTS" +
+            "(SELECT user FROM UserEntity user " +
+                "WHERE user.email=:email AND user.role='ADMIN'" +
+            ")"
+    )
+    boolean isAdmin(String email);
+
     @Transactional
     @Modifying
     @Query("UPDATE UserEntity u SET u.password = ?1 WHERE u.email=?2")
