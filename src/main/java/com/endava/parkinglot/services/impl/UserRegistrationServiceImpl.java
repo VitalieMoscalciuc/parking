@@ -28,6 +28,9 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static io.github.bucket4j.Bucket.builder;
 
@@ -47,6 +50,15 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     private final EmailNotificationService emailNotificationService;
 
     private static final Logger logger = LoggerFactory.getLogger(UserRegistrationServiceImpl.class);
+
+    private static final long RESET_INTERVAL = 1;
+
+    private final ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
+
+    //reset the buckets
+    private void resetRateLimitBuckets() {
+        rateLimitMap.clear();
+    }
 
     @Autowired
     public UserRegistrationServiceImpl(UserRepository userRepository,PasswordGenerator passwordGenerator, UserMapper userMapper, PasswordEncoder passwordEncoder, EmailNotificationService emailNotificationService) {
@@ -88,12 +100,18 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     }
 
     private boolean isRateLimitExceededByEmail(String email) {
-        Bucket userRateLimit = rateLimitMap.computeIfAbsent(email, key -> createRateLimitBucket());
+        Bucket userRateLimit = rateLimitMap.computeIfAbsent(email, key -> {
+            scheduler.schedule(this::resetRateLimitBuckets, RESET_INTERVAL, TimeUnit.HOURS);
+            return createRateLimitBucket();
+        });
         return !userRateLimit.tryConsume(1);
     }
 
     private boolean isRateLimitExceededByIP(String ipAddress) {
-        Bucket userRateLimit = rateLimitMap.computeIfAbsent(ipAddress, key -> createRateLimitBucket());
+        Bucket userRateLimit = rateLimitMap.computeIfAbsent(ipAddress, key -> {
+            scheduler.schedule(this::resetRateLimitBuckets, RESET_INTERVAL, TimeUnit.HOURS);
+            return createRateLimitBucket();
+        });
         return !userRateLimit.tryConsume(1);
     }
 
