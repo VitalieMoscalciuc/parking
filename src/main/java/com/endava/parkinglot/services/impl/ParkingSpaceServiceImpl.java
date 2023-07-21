@@ -23,6 +23,7 @@ import java.util.List;
 public class ParkingSpaceServiceImpl implements ParkingSpaceService {
 
     private final ParkingSpaceRepository parkingSpaceRepository;
+    private final UserRepository userRepository;
     private final ParkingSpaceMapper spaceMapper;
     private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(ParkingSpaceServiceImpl.class);

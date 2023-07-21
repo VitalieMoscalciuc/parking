@@ -38,7 +38,7 @@ public class ParkingLotController {
     public ResponseEntity<List<ParkingLotDtoResponse>> getAll(
             @RequestParam(required = false) String searchString) {
         List<ParkingLotDtoResponse> parkingLots
-                = parkingLotService.getAllParkingLot(searchString);
+                = parkingLotService.getAllParkingLots(searchString);
         return new ResponseEntity<>(parkingLots, HttpStatus.OK);
     }
 
@@ -87,7 +87,7 @@ public class ParkingLotController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{parkingLotId}/deleteUser")
+    @DeleteMapping("/{parkingLotId}/deleteUser")
     public ResponseEntity<HttpStatus> deleteUserFromParkingLot(@PathVariable Long parkingLotId
             ,@RequestParam(value = "userId") Long userId) {
         parkingLotService.deleteUserFromParkingLot(userId, parkingLotId);

@@ -1,6 +1,7 @@
 package com.endava.parkinglot.validators;
 
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
+import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.model.ParkingLotEntity;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,10 @@ public class ParkingLotEditValidator extends ParkingLotGeneralValidator {
     private final ParkingLotRepository parkingLotRepository;
 
     public void validate(Object target, Errors errors, Long currentId){
+        if (parkingLotRepository.findById(currentId).isEmpty()){
+            throw new ParkingLotNotFoundException(currentId);
+        }
+
         ParkingLotDtoRequest dtoRequest = ParkingLotGeneralValidator.generalValidation(target, errors);
 
         if (dtoRequest.getName() != null) {

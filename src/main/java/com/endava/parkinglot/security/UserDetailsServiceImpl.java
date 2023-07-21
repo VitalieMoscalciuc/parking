@@ -1,5 +1,6 @@
 package com.endava.parkinglot.security;
 
+import com.endava.parkinglot.exceptions.user.UserNotFoundException;
 import com.endava.parkinglot.model.UserEntity;
 import com.endava.parkinglot.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +25,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("No such employee in the system !"));
+                .orElseThrow(() -> new UsernameNotFoundException("No such user in the system !"));
 
-        UserDetails userDetails = User.builder()
+        return User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
                 .roles(user.getRole().toString())
@@ -35,7 +36,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .accountLocked(false)
                 .credentialsExpired(false)
                 .build();
-
-        return userDetails;
     }
 }

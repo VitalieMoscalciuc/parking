@@ -23,6 +23,10 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
             "AND (LOWER(lot.name) LIKE CONCAT('%', LOWER(:searchString), '%') OR :searchString IS NULL)")
     List<ParkingLotEntity> search(String searchString, String userEmail);
 
+    @Query("SELECT lot FROM ParkingLotEntity lot " +
+            "WHERE (LOWER(lot.name) LIKE CONCAT('%', LOWER(:searchString), '%') OR :searchString IS NULL)")
+    List<ParkingLotEntity> search(String searchString);
+
     @Modifying
     @Query(value = "delete from user_parking_lot where user_id = :userId and lot_id = :parkingLotId "
             ,nativeQuery = true)
@@ -39,7 +43,6 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
                     "               AND user_parking_lot.lot_id = :parkingLotId)"
             ,nativeQuery = true)
     boolean checkIfUserExistsOnParkingLotByUserEmail(@Param("email") String email, @Param("parkingLotId") Long parkingLotId);
-
 
     Optional<ParkingLotEntity> findByName(String name);
 

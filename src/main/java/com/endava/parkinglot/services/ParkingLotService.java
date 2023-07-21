@@ -17,4 +17,5 @@ public interface ParkingLotService {
     void deleteParkingLot(Long id);
     void performValidationForCreation(ParkingLotDtoRequest parkingLotCreationDtoRequest, BindingResult bindingResult);
     void performValidationForEdit(ParkingLotDtoRequest parkingLotDtoRequest, BindingResult bindingResult, Long id);
+
 }

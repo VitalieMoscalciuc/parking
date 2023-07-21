@@ -2,6 +2,7 @@ package com.endava.parkinglot.security.filters;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.endava.parkinglot.exceptions.jwt.JWTInvalidException;
+import com.endava.parkinglot.exceptions.jwt.RoleHasBeenChangedException;
 import com.endava.parkinglot.security.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -55,9 +57,20 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String jwt = authHeader.substring(7);
 
         try {
-            String username = jwtUtil.validateTokenAndRetrieveClaim(jwt);
+            List<String> data = jwtUtil.validateTokenAndRetrieveClaim(jwt);
+            String email = data.get(0);
+            String roleFromJWT = data.get(1);
+            String roleFromUserDetails = "";
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+            for(GrantedAuthority authority : userDetails.getAuthorities()){
+                roleFromUserDetails = authority.getAuthority().substring(5);
+            }
+
+            if (!roleFromJWT.equals(roleFromUserDetails)){
+                throw new RoleHasBeenChangedException("Invalid JWT Token! Your role has been changed, so you need to authenticate one more time.");
+            }
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,

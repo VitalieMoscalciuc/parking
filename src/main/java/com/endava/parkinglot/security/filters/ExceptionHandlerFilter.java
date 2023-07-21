@@ -1,6 +1,7 @@
 package com.endava.parkinglot.security.filters;
 
 import com.endava.parkinglot.exceptions.jwt.JWTInvalidException;
+import com.endava.parkinglot.exceptions.jwt.RoleHasBeenChangedException;
 import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.exceptions.exceptionHandler.ErrorDetailsInfo.FilterErrorDetails;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,15 +25,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         }
-        catch (UserNotGrantedToDoActionException e) {
-            FilterErrorDetails errorResponse = new FilterErrorDetails(LocalDate.now().toString(), e.getMessage());
-            String jsonErrorResponse = convertObjectToJson(errorResponse);
-
-            response.setStatus(HttpStatus.FORBIDDEN.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            response.getWriter().write(jsonErrorResponse);
-        }
-        catch (JWTInvalidException e) {
+        catch (RoleHasBeenChangedException | UserNotGrantedToDoActionException | JWTInvalidException e) {
             FilterErrorDetails errorResponse = new FilterErrorDetails(LocalDate.now().toString(), e.getMessage());
             String jsonErrorResponse = convertObjectToJson(errorResponse);
 

@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.endava</groupId>
 	<artifactId>parking-lot</artifactId>
-	<version>0.0.21-SNAPSHOT</version>
+	<version>0.0.29-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>parking-lot</name>
 	<description>Internal project for Spring Java Internship 2023</description>

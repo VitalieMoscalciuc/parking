@@ -10,6 +10,7 @@ import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotExcepti
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
+import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.mapper.ParkingMapper;
 import com.endava.parkinglot.model.*;
 import com.endava.parkinglot.model.repository.ParkingLotRepository;
@@ -51,13 +52,19 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     private static final Logger logger = LoggerFactory.getLogger(ParkingLotServiceImpl.class);
 
     @Override
-    public List<ParkingLotDtoResponse> getAllParkingLot(String searchString) {
+    public List<ParkingLotDtoResponse> getAllParkingLots(String searchString) {
         String email = getUsernameOfAuthenticatedUser();
 
         if (searchString == null) logger.info("Going to look for all the lots for user with email = " + email);
         else logger.info("Going to look for lots with name like: " + searchString);
 
-        List<ParkingLotEntity> lots = parkingLotRepository.search(searchString, email);
+        List<ParkingLotEntity> lots;
+
+        if (userRepository.isAdmin(email))
+            lots = parkingLotRepository.search(searchString);
+        else
+            lots = parkingLotRepository.search(searchString, email);
+
 
         logger.info("Found " + lots.size() + " parking lots based on your query.");
 
@@ -404,7 +411,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return parkingSpaces;
     }
 
-    private ParkingLevelEntity containsTheFloorEntity(List<ParkingLevelEntity> levels, Character floor) {
+    private ParkingLevelEntity containsTheFloorEntity(List<ParkingLevelEntity> levels, String floor) {
         for (ParkingLevelEntity entity : levels){
             if (entity.getFloor().equals(floor)){
                 return entity;
@@ -413,7 +420,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return null;
     }
 
-    private LevelDtoForLot containsTheFloorDTO(List<LevelDtoForLot> levels, Character floor) {
+    private LevelDtoForLot containsTheFloorDTO(List<LevelDtoForLot> levels, String floor) {
         for (LevelDtoForLot request : levels){
             if (request.getFloor().equals(floor)){
                 return request;

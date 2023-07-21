@@ -191,7 +191,6 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
             throw new UserNotFoundException("Missing user ID or email.");
         }
 
-
         try {
             emailNotificationService.sendNotificationAboutGrantedAdminRole(entity.getEmail());
         } catch (FailedEmailNotificationException failedEmailNotificationException) {

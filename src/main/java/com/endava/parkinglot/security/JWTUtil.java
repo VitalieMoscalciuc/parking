@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JWTUtil {
@@ -17,19 +18,20 @@ public class JWTUtil {
     @Value("${jwt.secret.custom_jwt_secret}")
     private String SECRET;
 
-    public String generateAccessToken(String username){
+    public String generateAccessToken(String username, String role){
         Date expirationDate = Date.from(ZonedDateTime.now().plusHours(24).toInstant());
 
         return JWT.create()
                 .withSubject("User details")
                 .withClaim("username", username)
+                .withClaim("role", role)
                 .withIssuedAt(new Date())
                 .withIssuer("PARKING_LOT")
                 .withExpiresAt(expirationDate)
                 .sign(Algorithm.HMAC256(SECRET));
     }
 
-    public String validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
+    public List<String> validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET))
                 .withIssuer("PARKING_LOT")
                 .withSubject("User details")
@@ -37,7 +39,10 @@ public class JWTUtil {
 
         DecodedJWT decodedJWT = verifier.verify(token);
 
-        return decodedJWT.getClaim("username").asString();
+        String email = decodedJWT.getClaim("username").asString();
+        String role = decodedJWT.getClaim("role").asString();
+
+        return List.of(email, role);
     }
 
 }

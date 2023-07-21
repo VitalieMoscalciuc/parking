@@ -3,7 +3,6 @@ package com.endava.parkinglot.controllers;
 import com.endava.parkinglot.DTO.auth.AuthAndRegistrationResponseDTO;
 import com.endava.parkinglot.DTO.auth.AuthenticationDTO;
 import com.endava.parkinglot.security.JWTUtil;
-import com.endava.parkinglot.services.impl.UserRegistrationServiceImpl;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,7 @@ public class AuthenticationController {
             role = authority.getAuthority().substring(5);
         }
 
-        String jwt = jwtUtil.generateAccessToken(authenticationDTO.getEmail());
+        String jwt = jwtUtil.generateAccessToken(authenticationDTO.getEmail(), role);
 
         AuthAndRegistrationResponseDTO response = new AuthAndRegistrationResponseDTO(
                 userDetails.getUsername(),

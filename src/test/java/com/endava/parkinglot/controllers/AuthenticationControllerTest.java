@@ -54,11 +54,11 @@ class AuthenticationControllerTest {
         when(authentication.getPrincipal()).thenReturn(createUserDetails());
 
         String jwtToken = "testToken";
-        when(jwtUtil.generateAccessToken(authenticationDTO.getEmail())).thenReturn(jwtToken);
+        when(jwtUtil.generateAccessToken(authenticationDTO.getEmail(), "REGULAR")).thenReturn(jwtToken);
 
         AuthAndRegistrationResponseDTO expectedResponse = new AuthAndRegistrationResponseDTO(
                 authenticationDTO.getEmail(),
-                "ROLE_USER".substring(5),
+                "ROLE_REGULAR".substring(5),
                 jwtToken
         );
 
@@ -76,13 +76,13 @@ class AuthenticationControllerTest {
         );
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtUtil).generateAccessToken(authenticationDTO.getEmail());
+        verify(jwtUtil).generateAccessToken(authenticationDTO.getEmail(), "REGULAR");
     }
 
     private UserDetails createUserDetails() {
         String username = "vasilii@gmail.com";
         String password = "Vasilii_5";
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_REGULAR"));
 
         return new User(username, password, authorities);
     }
