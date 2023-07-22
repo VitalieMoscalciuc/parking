@@ -55,6 +55,7 @@ public class ParkingLotEntity {
 
     @ManyToMany(mappedBy = "parkingLots")
     Set<UserEntity> users;
+
     @Column(name = "status_close", nullable = false)
     private Boolean isClosed;
 }

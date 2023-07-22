@@ -18,4 +18,8 @@ public interface ParkingLevelRepository extends JpaRepository<ParkingLevelEntity
     @Modifying
     @Query(value = "DELETE FROM parking_level WHERE id=:id", nativeQuery = true)
     void deleteById(@NotNull Long id);
+
+    @Modifying
+    @Query("DELETE FROM ParkingLevelEntity level WHERE level.parkingLot.id=:id")
+    void deleteAllByParkingLotId(Long id);
 }

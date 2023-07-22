@@ -21,4 +21,15 @@ public interface ParkingSpaceRepository extends JpaRepository<ParkingSpaceEntity
     @Query("SELECT space FROM ParkingSpaceEntity space WHERE space.parkingLevel.parkingLot.id=:lotId " +
             "AND space.parkingLevel.id=:levelId")
     List<ParkingSpaceEntity> getAllByParkingLevelName(Long lotId, Long levelId);
+
+    @Modifying
+    @Query(value = "DELETE FROM parking_space WHERE id IN " +
+            "(SELECT space.id FROM parking_space space " +
+            "JOIN parking_level pl " +
+            "on space.parking_level_id = pl.id " +
+            "JOIN parking_lot p on p.id = pl.lot_id " +
+            "WHERE p.id=:id)",
+            nativeQuery = true
+    )
+    void deleteAllByParkingLotId(Long id);
 }

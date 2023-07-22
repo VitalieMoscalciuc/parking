@@ -28,9 +28,13 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
     List<ParkingLotEntity> search(String searchString);
 
     @Modifying
-    @Query(value = "delete from user_parking_lot where user_id = :userId and lot_id = :parkingLotId "
+    @Query(value = "delete from user_parking_lot where user_id = :userId and lot_id = :parkingLotId"
             ,nativeQuery = true)
     void removeUserFromParkingLot(@Param("userId") Long userId, @Param("parkingLotId") Long parkingLotId);
+
+    @Modifying
+    @Query(value = "delete from user_parking_lot where lot_id = :lotId", nativeQuery = true)
+    void deleteAllUsersFromParkingLot(Long lotId);
 
     @Query(value = "SELECT EXISTS(SELECT FROM user_parking_lot WHERE user_id = :userId AND lot_id = :parkingLotId)"
             ,nativeQuery = true)
@@ -66,4 +70,15 @@ public interface ParkingLotRepository extends JpaRepository<ParkingLotEntity, Lo
     @Query(value = "SELECT count(*) FROM parking_space WHERE parking_level_id IN" +
             "            (SELECT id FROM parking_level WHERE lot_id = :id)", nativeQuery = true)
     int countOfAllSpaces(Long id);
+
+    @Modifying
+    @Query("DELETE FROM ParkingLotEntity lot WHERE lot.id=:id")
+    void deleteById(Long id);
+
+    @Query("SELECT EXISTS " +
+            "(SELECT COUNT(*) " +
+            "FROM ParkingLotEntity lot " +
+            "WHERE lot.id=:id)"
+    )
+    boolean existsById(Long id);
 }

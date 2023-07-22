@@ -107,7 +107,7 @@ public class ParkingMapper {
         }
         response.setLevels(levels);
 
-        response.setWorkingHours(entity.getBeginWorkingHour().toString() + " - " + entity.getEndWorkingHour().toString());
+        response.setWorkingHours(entity.getBeginWorkingHour().toString() + "-" + entity.getEndWorkingHour().toString());
 
         response.setIsClosed(entity.getIsClosed());
 
