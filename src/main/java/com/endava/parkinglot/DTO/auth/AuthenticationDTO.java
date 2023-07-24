@@ -19,7 +19,7 @@ public class AuthenticationDTO {
 
     @NotBlank(message = "Email cannot be empty.", groups = NotEmptyValidationGroup.class)
     @Size(min = 5, max = 320, message = "Size of the email should be from 5 to 320 characters.", groups = SizeValidationGroup.class)
-    @Pattern(regexp = "^(?=.{5,320}$)(?=[a-zA-Z])[a-zA-Z0-9._!#$%&'*+/=?^`{|}~-]{1,64}@[a-zA-Z0-9.-]{1,255}\\.[a-zA-Z]{1,63}$", message="Invalid email. It should be like: 'example@email.com'.", groups = PatternValidationGroup.class)
+    @Pattern(regexp = "^(?=.{5,320}$)(?=[a-zA-Z0-9])[a-zA-Z0-9._!#$%&'*+/=?^`{|}~-]{1,64}@[a-zA-Z0-9.-]{1,255}\\.[a-zA-Z]{1,63}$", message="Invalid email. It should be like: 'example@email.com'.", groups = PatternValidationGroup.class)
     private String email;
 
     @NotBlank(message = "Invalid password. Must be 5-10 characters, including symbols, upper- and lower-case letters." +
