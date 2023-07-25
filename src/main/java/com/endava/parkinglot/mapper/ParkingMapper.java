@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -105,13 +107,12 @@ public class ParkingMapper {
             levelDtoForLot.setNumberOfSpaces(levelEntity.getNumberOfSpaces());
             levels.add(levelDtoForLot);
         }
+
         response.setLevels(levels);
-
         response.setWorkingHours(entity.getBeginWorkingHour().toString() + "-" + entity.getEndWorkingHour().toString());
-
         response.setIsClosed(entity.getIsClosed());
-
-        response.setOperatesNonStop(entity.getBeginWorkingHour().toString().contains("00:00") && entity.getEndWorkingHour().toString().contains("23:59"));
+        boolean isFullDay = entity.getBeginWorkingHour().toString().contains("00:00") && entity.getEndWorkingHour().toString().contains("23:59");
+        response.setOperatesNonStop(isFullDay && new HashSet<>(days).containsAll(Arrays.asList(WorkingDays.values())));
 
         return response;
     }
