@@ -14,8 +14,10 @@ import com.endava.parkinglot.mapper.ParkingMapper;
 import com.endava.parkinglot.model.*;
 import com.endava.parkinglot.model.repository.*;
 import com.endava.parkinglot.services.ParkingLotService;
+import com.endava.parkinglot.util.QRCodeGenerator;
 import com.endava.parkinglot.validators.ParkingLotCreationValidator;
 import com.endava.parkinglot.validators.ParkingLotEditValidator;
+import com.google.zxing.WriterException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -42,6 +44,8 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     private final ParkingLotEditValidator parkingLotEditValidator;
     private final ParkingMapper parkingMapper;
     private final EmailNotificationServiceImpl emailNotificationService;
+    private final QRCodeGenerator qrCodeGenerator;
+    private final QRCodeRepository qrCodeRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ParkingLotServiceImpl.class);
 
@@ -70,6 +74,25 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         return parkingLotDtoResponses;
     }
 
+    private void addQRCodeToParkingSpaces(ParkingLotEntity parkingLotEntity) throws WriterException {
+
+        for(ParkingLevelEntity levelEntity: parkingLotEntity.getLevels()) {
+            List<ParkingSpaceEntity> spaces = levelEntity.getParkingSpaces();
+            for(ParkingSpaceEntity space : spaces){
+                byte[] qrCodeData = qrCodeGenerator.generateQRCode(space,levelEntity,parkingLotEntity);
+
+                QRCodeEntity qrCodeEntity = new QRCodeEntity();
+                qrCodeEntity.setQrCodeData(qrCodeData);
+
+                qrCodeRepository.save(qrCodeEntity);
+
+                space.setQrCode(qrCodeEntity);
+
+            }
+
+        }
+    }
+
 
     @Override
     public ParkingLotDtoResponse getOneParkingLot(Long id) {
@@ -96,12 +119,14 @@ public class ParkingLotServiceImpl implements ParkingLotService {
 
     @Override
     @Transactional
-    public ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotCreationDtoRequest) {
+    public ParkingLotDtoResponse createParkingLot(ParkingLotDtoRequest parkingLotCreationDtoRequest) throws WriterException {
         ParkingLotEntity parkingLot = parkingMapper.mapRequestDtoToEntity(parkingLotCreationDtoRequest);
 
         addParkingSpacesToLevels(parkingLot);
 
         ParkingLotEntity savedParkingLot = parkingLotRepository.save(parkingLot);
+
+        addQRCodeToParkingSpaces(parkingLot);
 
         UserEntity user = userRepository.findByEmail(getUsernameOfAuthenticatedUser())
                 .orElseThrow(() -> new UserNotFoundException("No such username in the system!"));

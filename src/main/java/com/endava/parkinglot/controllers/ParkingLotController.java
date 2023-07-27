@@ -3,6 +3,7 @@ package com.endava.parkinglot.controllers;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoRequest;
 import com.endava.parkinglot.DTO.parkingLot.ParkingLotDtoResponse;
 import com.endava.parkinglot.services.ParkingLotService;
+import com.google.zxing.WriterException;
 import jakarta.validation.Valid;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class ParkingLotController {
     @PostMapping("/create")
     public ResponseEntity<ParkingLotDtoResponse> createParkingLot(
             @Valid @RequestBody ParkingLotDtoRequest parkingLotCreationDtoRequest,
-            BindingResult bindingResult) {
+            BindingResult bindingResult) throws WriterException {
 
         parkingLotService.performValidationForCreation(parkingLotCreationDtoRequest, bindingResult);
 
@@ -64,7 +65,7 @@ public class ParkingLotController {
     @PutMapping("/update/{id}")
     public ResponseEntity<ParkingLotDtoResponse> editParkingLot(@PathVariable Long id,
                                                                 @Valid @RequestBody ParkingLotDtoRequest parkingLotDtoRequest,
-                                                                BindingResult bindingResult){
+                                                                BindingResult bindingResult) throws WriterException {
         parkingLotService.performValidationForEdit(parkingLotDtoRequest, bindingResult, id);
 
         ParkingLotDtoResponse editedParkingLot =

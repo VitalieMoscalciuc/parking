@@ -56,4 +56,8 @@ public class ParkingSpaceEntity {
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "qr_code_id")
+    private QRCodeEntity qrCode;
 }

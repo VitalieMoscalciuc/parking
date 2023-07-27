@@ -10,5 +10,6 @@ public interface ParkingSpaceService {
     List<SpaceDTO> getAllByLevelId(Long lotId, Long levelId, String name);
 
     void editParkingSpaceType(Long spaceId, SpaceType spaceType);
-    void addUserToParkingSpace(Long userId, Long spaceId);
+
+    void addUserToParkingSpace(Long spaceId,Long userId);
 }

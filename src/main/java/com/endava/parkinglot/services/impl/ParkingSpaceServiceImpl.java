@@ -25,6 +25,7 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
     private final ParkingSpaceRepository parkingSpaceRepository;
     private final UserRepository userRepository;
     private final ParkingSpaceMapper spaceMapper;
+    private final UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(ParkingSpaceServiceImpl.class);
 
 
@@ -68,7 +69,7 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
     }
 
     @Override
-    public void addUserToParkingSpace(Long userId, Long spaceId) {
+    public void addUserToParkingSpace(Long spaceId, Long userId) {
         logger.info("adding user to parking space");
         ParkingSpaceEntity parkingSpace = parkingSpaceRepository
                 .findById(spaceId)
