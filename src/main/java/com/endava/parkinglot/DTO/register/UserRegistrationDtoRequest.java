@@ -23,12 +23,12 @@ public class UserRegistrationDtoRequest {
 
     @NotBlank(message = "Only alphabetical characters are allowed, maximum length is 30 characters")
     @Size(max = 30, message = "Only alphabetical characters are allowed, maximum length is 30 characters")
-    @Pattern(regexp = "^[\\p{L}\\s]+$", message = "Only alphabetical characters are allowed, maximum length is 30 characters")
+    @Pattern(regexp = "^(?!.*[\\uD83C-\\uD83E\\uDB40\\uDC00-\\uDBFF\\uDC00-\\uDFFF])[A-Za-z\\p{IsCyrillic}\\u0100-\\u017FțșăâĂÎîȚȘÂ\\s]+$", message = "Only alphabetical characters are allowed, maximum length is 30 characters")
     private String name;
 
     @NotBlank(message = "Invalid email. It must follow the standard email pattern: example@gmail.com.", groups = NotEmptyValidationGroup.class)
     @Size(min = 5, max = 320, message = "Size of the email should be from 5 to 320 characters.", groups = SizeValidationGroup.class)
-    @Pattern(regexp = "^(?=.{5,320}$)(?=[a-zA-Z])[a-zA-Z0-9._!#$%&'*+/=?^`{|}~-]{1,64}@[a-zA-Z0-9.-]{1,255}\\.[a-zA-Z]{1,63}$", message="Invalid email. It should be like: 'example@email.com'", groups = PatternValidationGroup.class)
+    @Pattern(regexp = "^(?=.{5,320}$)(?=[a-zA-Z0-9])[a-zA-Z0-9._!#$%&'*+/=?^`{|}~-]{1,64}@[a-zA-Z0-9.-]{1,255}\\.[a-zA-Z]{1,63}$", message="Invalid email. It should be like: 'example@email.com'", groups = PatternValidationGroup.class)
     private String email;
 
     @NotBlank(message = "Invalid password. Must be 5-10 characters, including symbols, upper- and lower-case letters." +

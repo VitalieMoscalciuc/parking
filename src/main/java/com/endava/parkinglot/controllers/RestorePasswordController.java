@@ -28,6 +28,7 @@ public class RestorePasswordController {
     public ResponseEntity<UserPasswordRestoreDtoResponse> restore(
             @Valid @RequestBody UserPasswordRestoreDtoRequest userPasswordRestoreDtoRequest,
             ServletRequest request) {
+        userPasswordRestoreDtoRequest.setEmail(userPasswordRestoreDtoRequest.getEmail().toLowerCase());
         UserPasswordRestoreDtoResponse response =
                 userRegistrationService.changeUserPasswordAndSendEmail(userPasswordRestoreDtoRequest.getEmail()
                         ,request.getRemoteAddr());

@@ -10,13 +10,9 @@ import com.endava.parkinglot.exceptions.parkingLot.NoSuchUserOnParkingLotExcepti
 import com.endava.parkinglot.exceptions.parkingLot.ParkingLotNotFoundException;
 import com.endava.parkinglot.exceptions.parkingLot.ParkingSpacesOccupiedException;
 import com.endava.parkinglot.exceptions.user.UserNotFoundException;
-import com.endava.parkinglot.exceptions.user.UserNotGrantedToDoActionException;
 import com.endava.parkinglot.mapper.ParkingMapper;
 import com.endava.parkinglot.model.*;
-import com.endava.parkinglot.model.repository.ParkingLotRepository;
-import com.endava.parkinglot.model.repository.QRCodeRepository;
-import com.endava.parkinglot.model.repository.UserRepository;
-import com.endava.parkinglot.model.repository.WorkingDaysRepository;
+import com.endava.parkinglot.model.repository.*;
 import com.endava.parkinglot.services.ParkingLotService;
 import com.endava.parkinglot.util.QRCodeGenerator;
 import com.endava.parkinglot.validators.ParkingLotCreationValidator;
@@ -42,6 +38,8 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     private final ParkingLotRepository parkingLotRepository;
     private final UserRepository userRepository;
     private final WorkingDaysRepository workingDaysRepository;
+    private final ParkingLevelRepository parkingLevelRepository;
+    private final ParkingSpaceRepository parkingSpaceRepository;
     private final ParkingLotCreationValidator parkingLotCreationValidator;
     private final ParkingLotEditValidator parkingLotEditValidator;
     private final ParkingMapper parkingMapper;
@@ -207,6 +205,7 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     }
 
     @Override
+    @Transactional
     public void deleteParkingLot(Long id) {
         logger.info("Trying to delete parking lot from system");
 
@@ -218,7 +217,12 @@ public class ParkingLotServiceImpl implements ParkingLotService {
         if (parkingLotRepository.countOfOccupiedParkingSpotsByLotId(id) != 0)
             throw new ParkingSpacesOccupiedException("You can't delete this parking lot because there are occupied parking spots there.");
 
+        workingDaysRepository.deleteAllByParkingLotId(id);
+        parkingLotRepository.deleteAllUsersFromParkingLot(id);
+        parkingSpaceRepository.deleteAllByParkingLotId(id);
+        parkingLevelRepository.deleteAllByParkingLotId(id);
         parkingLotRepository.deleteById(id);
+
         logger.info("Parking lot with id = " + id + " was successfully deleted.");
     }
 

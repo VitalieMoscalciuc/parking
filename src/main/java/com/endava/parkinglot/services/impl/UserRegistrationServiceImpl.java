@@ -167,8 +167,8 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
     private void validateEmail(String email) {
         logger.info("Validating email to grant admin permissions...");
         if (email != null) {
-            EmailValidator validator = EmailValidator.getInstance();
-            if (!validator.isValid(email)) {
+            if (!Pattern.matches(
+                    "^(?=.{5,320}$)(?=[a-zA-Z0-9])[a-zA-Z0-9._!#$%&'*+/=?^`{|}~-]{1,64}@[a-zA-Z0-9.-]{1,255}\\.[a-zA-Z]{1,63}$", email)) {
                 Map<String, String> errors = new HashMap<>();
                 errors.put("email", "Invalid email. It should be like: 'example@email.com'");
                 logger.error("Email is not valid.");

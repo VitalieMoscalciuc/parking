@@ -31,7 +31,7 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
 
     @Autowired
     public ParkingSpaceServiceImpl(ParkingSpaceRepository parkingSpaceRepository, ParkingSpaceMapper spaceMapper
-            ,UserRepository userRepository) {
+            , UserRepository userRepository) {
         this.parkingSpaceRepository = parkingSpaceRepository;
         this.spaceMapper = spaceMapper;
         this.userRepository = userRepository;
@@ -42,7 +42,7 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
     public List<SpaceDTO> getAllByLevelId(Long lotId, Long levelId, String searchString) {
         logger.info("Trying to get all the spaces from specific parking lot: " + lotId + " and from specific level: " + levelId);
         List<ParkingSpaceEntity> spaces = parkingSpaceRepository.getAllByParkingLevelId(lotId, levelId, searchString);
-        if (spaces.isEmpty()){
+        if (spaces.isEmpty()) {
             logger.error("There is no spaces based on your request ! Parking Lot id: " + lotId + ", level id: "
                     + levelId + ", searchString: " + searchString);
             throw new ParkingSpaceNotFoundException();
@@ -53,7 +53,19 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
 
     @Override
     public void editParkingSpaceType(Long spaceId, SpaceType spaceType) {
-
+        logger.info("editing type to parking space");
+        ParkingSpaceEntity parkingSpace = parkingSpaceRepository
+                .findById(spaceId)
+                .orElseThrow(
+                        ParkingSpaceNotFoundException::new
+                );
+        if (spaceType.equals(SpaceType.TEMPORARILY_CLOSED) && parkingSpace.getState().equals(SpaceState.OCCUPIED)) {
+            logger.error("Parking Space with ID {} cannot be temporarily closed, the user with ID {} is parked now", spaceId, parkingSpace.getUser().getId());
+            throw new ParkingSpacesOccupiedException("Parking space is occupied");
+        }
+        parkingSpace.setType(spaceType);
+        parkingSpaceRepository.save(parkingSpace);
+        logger.info("Parking space type is edited");
     }
 
     @Override
@@ -66,12 +78,12 @@ public class ParkingSpaceServiceImpl implements ParkingSpaceService {
                 );
 
         UserEntity userEntity = userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("User with Id "+userId+" is not found in system")
+                () -> new UserNotFoundException("User with Id " + userId + " is not found in system")
         );
         if (SpaceState.OCCUPIED.equals(parkingSpace.getState())) {
             logger.error("Parking Space with ID {} is already occupied", spaceId);
             throw new ParkingSpacesOccupiedException("Parking space is already occupied");
-        }else{
+        } else {
             parkingSpace.setState(SpaceState.OCCUPIED);
             parkingSpace.setUser(userEntity);
             parkingSpaceRepository.save(parkingSpace);
